@@ -1,6 +1,6 @@
 :root {
     /* Brand Colors */
-    --color-primary: #1f3a93;    /*Midnight Navy - Logo, buttons, accents*/
+    --color-primary: #002c56;    /*Midnight Navy - Logo, buttons, accents*/
     --color-accent: #F4c542;     /*Command Gold - highlights, callouts*/
     --color-backround: #F2F4F8;  /*Light Sky - page backround*/
     --color-surface: #FFFFFF;    /* White – card & section backgrounds */
@@ -154,7 +154,7 @@
 .site-header {
     background-color: var(--color-primary);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    padding: 1rem 2rem;
+    padding: 0.5rem 2rem;
 }
 
 .nav-container {
@@ -167,6 +167,8 @@
 
 .logo {
     height: 40px;
+    display: flex;
+    align-items: center;
 }
 
 .main-nav a {
@@ -183,6 +185,6 @@
 }
 
 .logo img {
-  height: 48px;
+  height: 64px;
   display: block;
 }
