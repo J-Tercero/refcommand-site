@@ -188,3 +188,44 @@
   height: 64px;
   display: block;
 }
+
+.menu-toggle {
+  display: none;
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: var(--color-surface);
+  cursor: pointer;
+}
+
+/*Mobile Styles*/
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .main-nav .nav-links {
+    display: none;
+    flex-direction: column;
+    background-color: var(--color-primary);
+    position: absolute;
+    top: 100%;
+    right: 2rem;
+    width: fit-content;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    z-index: 10;
+  }
+
+  .main-nav.open .nav-links {
+    display: flex;
+  }
+
+  .main-nav a {
+    margin: 0.5rem 0;
+  }
+  .nav-container {
+    position: relative;
+    flex-wrap: wrap;
+  }
+}
