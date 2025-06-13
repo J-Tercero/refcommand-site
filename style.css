@@ -152,7 +152,7 @@
 }
 
 .site-header {
-    background-color: var(--color-surface);
+    background-color: var(--color-primary);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     padding: 1rem 2rem;
 }
@@ -172,12 +172,17 @@
 .main-nav a {
     margin-left: 1.5rem;
     text-decoration: none;
-    color: var(--color-text);
+    color: var(--color-surface);
     font-family: var(--font-body);
     font-weight: 600;
     transition: color 0.2s ease-in-out;
 }
 
 .main-nav a:hover {
-    color: var(--color-primary);
+    color: var(--color-accent);
+}
+
+.logo img {
+  height: 48px;
+  display: block;
 }
