@@ -171,6 +171,14 @@
     align-items: center;
 }
 
+.desktop-logo {
+  display: block;
+}
+
+.mobile-logo {
+  display: none;
+}
+
 .main-nav a {
     margin-left: 1.5rem;
     text-decoration: none;
@@ -229,4 +237,42 @@
     position: relative;
     flex-wrap: wrap;
   }
+
+/*Mobile Logo*/
+.desktop-logo {
+  display: none;
+}
+
+.mobile-logo {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.responsive-logo {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  padding: 0 1rem;
+}
+
+.line-group {
+  flex: 1;
+  height: 2px;
+  background: var(--color-accent);
+  opacity: 0.75;
+}
+
+.logo-center img {
+  height: 28px;
+}
+
+.logo.text {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-surface);
+}
+
 }
