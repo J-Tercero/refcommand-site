@@ -10,23 +10,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./style.css"/>
     </head>
-<header class="site-header">
-    <div class="nav-container">
+<body>
+    <header class="site-header">
+        <div class="nav-container">
         <!--desktop logo-->
-        <div class="logo desktop-logo">
-            <img src="./assets/RefCommad Logo_transparent.png" alt="Ref Command Logo"/>
-        </div>
-        <!--Mobile Logo-->
-        <div class="logo mobile-logo">
-            <div class="responsive-logo">
-                <div class="line-group left-lines"></div>
-                <div class="logo-center">
-                    <img src="./assets/RC_BullsEye_Transparent_SVG.svg" alt="RefCommand Bulle Eye" />
-                    <span class="logo-text">RefCommand</span>
-                </div>
-                <div class="line-group right lines"></div>
+            <div class="logo desktop-logo">
+                <img src="./assets/RefCommad Logo_transparent.png" alt="Ref Command Logo"/>
             </div>
-        </div>
+        <!--Mobile Logo-->
+            <div class="logo mobile-logo">
+                <div class="responsive-logo">
+                    <div class="line-group left-lines">
+                        <div></div><div></div><div></div><div></div>
+                    </div>
+                    <div class="logo-center">
+                        <img src="./assets/RC_BullsEye_Transparent_SVG.svg" alt="RefCommand Bullseye" />
+                        <span class="logo-text">RefCommand</span>
+                    </div>
+                    <div class="line-group right-lines">
+                    <div></div><div></div><div></div><div></div>
+                    </div>
+                </div>
+            </div>
         <!--- Hamburger Button-->
         <button class="menu-toggle" id="menuToggle">☰</button>
 
@@ -40,6 +45,8 @@
             </div>
         </nav>
     </div>
+
+</header>
 <script>
   const toggle = document.getElementById('menuToggle');
   const nav = document.getElementById('mainNav');
@@ -48,5 +55,5 @@
     nav.classList.toggle('open');
   });
 </script>
-</header>
+</body>
 </html>
