@@ -154,7 +154,7 @@
 .site-header {
     background-color: var(--color-primary);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    padding: 0.5rem 2rem;
+    
 }
 
 .nav-container {
@@ -162,13 +162,21 @@
     justify-content: space-between;
     align-items: center;
     max-width: 1200px;
-    margin: 0 auto;
+    
 }
 
 .logo {
-    height: 40px;
-    display: flex;
-    align-items: center;
+   display: flex;
+  align-items: center;
+
+  }
+
+.logo img {
+  max-height: 100%;
+  height: auto;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .desktop-logo {
@@ -180,6 +188,7 @@
 }
 
 .main-nav a {
+    margin-right: 1rem;
     margin-left: 1.5rem;
     text-decoration: none;
     color: var(--color-surface);
