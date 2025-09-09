@@ -1,0 +1,347 @@
+:root {
+    /* Brand Colors */
+    --color-primary: #002c56;    /*Midnight Navy - Logo, buttons, accents*/
+    --color-accent: #F4c542;     /*Command Gold - highlights, callouts*/
+    --color-backround: #F2F4F8;  /*Light Sky - page backround*/
+    --color-surface: #FFFFFF;    /* White – card & section backgrounds */
+    --color-text: #4a4a4a;        /* Slate Gray – main text color */
+
+    /*Status Colors*/
+    --color-success: #27AE60;
+    --color-warning: #f39c12;
+    --color-danger: #e74C3C;
+    
+    /*Border*/
+    --color-border: #D9D9D9;
+
+    /*font*/
+    --font-heading:"Barlow Condensed", sans-serif;
+    --font-body:"Open Sans", sans-serif;
+}
+
+
+.barlow-condensed-thin {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.barlow-condensed-extralight {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.barlow-condensed-light {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.barlow-condensed-regular {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.barlow-condensed-medium {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.barlow-condensed-semibold {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.barlow-condensed-bold {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.barlow-condensed-extrabold {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.barlow-condensed-black {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.barlow-condensed-thin-italic {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.barlow-condensed-extralight-italic {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 200;
+  font-style: italic;
+}
+
+.barlow-condensed-light-italic {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.barlow-condensed-regular-italic {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.barlow-condensed-medium-italic {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.barlow-condensed-semibold-italic {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.barlow-condensed-bold-italic {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.barlow-condensed-extrabold-italic {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 800;
+  font-style: italic;
+}
+
+.barlow-condensed-black-italic {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 900;
+  font-style: italic;
+}
+.open-sans-light {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.open-sans-regular {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.open-sans-semibold {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.open-sans-bold {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.site-header {
+    background-color: var(--color-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body{
+  display: flex;
+  flex-direction: column;
+}
+.logo {
+   display: flex;
+  align-items: center;
+
+  }
+
+.logo img {
+  max-height: 100%;
+  height: auto;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.desktop-logo {
+  display: block;
+}
+
+.mobile-logo {
+  display: none;
+}
+
+main{
+  flex: 1;
+}
+.main-nav a {
+    margin-right: 1rem;
+    margin-left: 1.5rem;
+    text-decoration: none;
+    color: var(--color-surface);
+    font-family: var(--font-body);
+    font-weight: 600;
+    transition: color 0.2s ease-in-out;
+}
+
+.main-nav a:hover {
+    color: var(--color-accent);
+}
+
+.logo img {
+  height: 64px;
+  display: block;
+}
+
+.menu-toggle {
+  display: none;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: var(--color-surface);
+  cursor: pointer;
+  margin-left: auto;
+}
+
+footer{
+  background: #f4f4f4;
+  padding: 1rem;
+  text-align: center;
+}
+
+/*Mobile Styles*/
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .main-nav .nav-links {
+    display: none;
+    flex-direction: column;
+    background-color: var(--color-primary);
+    position: absolute;
+    top: 100%;
+    right: 2rem;
+    width: fit-content;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    z-index: 10;
+  }
+
+  .main-nav.open .nav-links {
+    display: flex;
+  }
+
+  .main-nav a {
+    margin: 0.5rem 0;
+  }
+  .nav-container {
+    position: relative;
+    flex-wrap: wrap;
+  }
+
+/*Mobile Logo*/
+.desktop-logo {
+  display: none;
+}
+
+.mobile-logo {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.responsive-logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 0.25rem 0.5rem;
+  width: 100%;
+  }
+
+.line-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 40px;
+
+  }
+
+.line-group div {
+    height: 2px;
+    width: 100%;
+    background-color: var(--color-accent);
+    border-radius: 1px;
+}
+
+.line-group.left-lines {
+  flex: 2;
+  max-width: 120px;
+  margin-right: 0.5rem;
+}
+.line-group.right-lines{
+  flex: 1;
+  max-width: 40px;
+  margin-left: 0.5rem;
+}
+
+.logo-center img {
+  max-height: 36px;
+  width: auto;
+  margin-top: 0;
+  margin-bottom: 0.1rem;
+  }
+
+.logo-text {
+ font-size: 1rem;
+ font-weight: 700;
+ color: var(--color-surface);
+ line-height: 1;
+ margin-top: 0.2rem;
+ text-align: center;
+}
+
+.logo-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  flex-grow: 1;
+  padding: 0 0.25rem;
+}
+
+.mobile-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+}
