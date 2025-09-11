@@ -228,6 +228,14 @@ main{
   margin-left: auto;
 }
 
+.pgHd {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  color: #002c56;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 footer{
   background: #f4f4f4;
   padding: 1rem;
