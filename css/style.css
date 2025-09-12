@@ -236,6 +236,34 @@ main{
   align-items: center;
 }
 
+#poe25 {
+  float: left;
+  padding: 1rem;
+  max-width: 40%;
+  border-radius: 8px;
+  
+}
+
+
+.sbpgHd {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: clamp(0.3rem, 2vw, 1rem);
+  color: #002c56;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  /* align-items: center; */
+  padding-top: 1rem;
+  }
+
+  .sbpgHd .byline {
+    font-size: 1rem;
+    font-style: italic;
+    color: #4a4a4a;
+    margin: 0;
+  }
+
+
 footer{
   background: #f4f4f4;
   padding: 1rem;
