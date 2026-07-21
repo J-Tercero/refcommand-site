@@ -13,6 +13,67 @@ document.querySelectorAll('[data-current-year]').forEach((element) => {
   element.textContent = new Date().getFullYear();
 });
 
+// This source-shaped model can be replaced by RefCommand articles, local feeds, alerts, or video data.
+const featuredStories = [
+  { id: 'week-one-enforcement', category: 'Rules Focus', title: 'Five NFHS enforcement situations every referee should master before Week 1.', summary: "The rare enforcement situations aren't difficult if you recognize them early. Review intentional grounding, post-scrimmage kick enforcement, momentum, illegal participation and double fouls before opening night.", image: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1800&q=85', link: 'pages/rules.html', videoLink: '', date: 'August 11, 2026', author: 'RefCommand Rules Desk' },
+  { id: 'rivalry-pregame', category: 'Pregame', title: 'Crew pregame checklist for rivalry week.', summary: 'A complete pregame structure covering clock management, communication, goal line mechanics and special situations. Walk onto the field with every assignment settled.', image: 'https://images.unsplash.com/photo-1566577739112-5180d4bf9390?auto=format&fit=crop&w=1800&q=85', link: 'pages/pregame.html', videoLink: '', date: 'August 14, 2026', author: 'RefCommand Crew Desk' },
+  { id: 'targeting-film', category: 'Video Breakdown', title: 'Was this targeting?', summary: "Frame-by-frame rules analysis of one of last week's most controversial plays. See how the indicators build from approach through contact.", image: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=1800&q=85', link: 'pages/rules.html', videoLink: '#', date: 'August 16, 2026', author: 'RefCommand Film Room' },
+  { id: 'sportsmanship-emphasis', category: 'Points of Emphasis', title: 'Officials should expect increased focus on sportsmanship this season.', summary: 'The best crews set the standard early, communicate clearly and respond consistently when the temperature rises.', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1800&q=85', link: 'pages/news.html', videoLink: '', date: 'August 18, 2026', author: 'RefCommand Editorial' },
+  { id: 'central-opening-week', category: 'Local News', title: 'Central Section crews preparing for opening week assignments.', summary: 'Assignments are taking shape as crews focus their final preparation on communication, travel and Friday-night readiness.', image: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1800&q=85', link: 'pages/news.html', videoLink: '', date: 'August 20, 2026', author: 'Central Section Desk' }
+];
+
+const featuredCarousel = document.querySelector('[data-featured-carousel]');
+
+if (featuredCarousel) {
+  const slides = featuredCarousel.querySelector('[data-featured-slides]');
+  const dots = featuredCarousel.querySelector('[data-featured-dots]');
+  const count = featuredCarousel.querySelector('[data-featured-count]');
+  const previous = featuredCarousel.querySelector('[data-featured-prev]');
+  const next = featuredCarousel.querySelector('[data-featured-next]');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let activeIndex = 0;
+  let rotation;
+
+  const storyMarkup = (story, index) => `<article class="featured-slide${index === 0 ? ' is-active' : ''}" data-featured-slide aria-hidden="${index === 0 ? 'false' : 'true'}"><img class="featured-slide__image" src="${story.image}" alt=""${index === 0 ? '' : ' loading="lazy"'}><div class="featured-slide__content"><p class="featured-slide__meta"><span class="featured-slide__tag">${story.category}</span><span>${story.date}</span><span>${story.author}</span></p><h1>${story.title}</h1><p class="featured-slide__summary">${story.summary}</p><div class="featured-slide__actions"><a class="featured-slide__button featured-slide__button--primary" href="${story.link}">Read Article <span aria-hidden="true">→</span></a>${story.videoLink ? `<a class="featured-slide__button" href="${story.videoLink}">Watch Video <span aria-hidden="true">↗</span></a>` : ''}</div></div></article>`;
+  slides.innerHTML = featuredStories.map(storyMarkup).join('');
+  dots.innerHTML = featuredStories.map((story, index) => `<button class="featured-carousel__dot${index === 0 ? ' is-active' : ''}" type="button" data-featured-dot="${index}" aria-label="Show ${story.category}: ${story.title}" aria-current="${index === 0 ? 'true' : 'false'}"></button>`).join('');
+
+  const showStory = (index) => {
+    activeIndex = (index + featuredStories.length) % featuredStories.length;
+    slides.querySelectorAll('[data-featured-slide]').forEach((slide, slideIndex) => {
+      const isActive = slideIndex === activeIndex;
+      slide.classList.toggle('is-active', isActive);
+      slide.setAttribute('aria-hidden', String(!isActive));
+    });
+    dots.querySelectorAll('[data-featured-dot]').forEach((dot, dotIndex) => {
+      const isActive = dotIndex === activeIndex;
+      dot.classList.toggle('is-active', isActive);
+      dot.setAttribute('aria-current', String(isActive));
+    });
+    count.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(featuredStories.length).padStart(2, '0')}`;
+  };
+  const stopRotation = () => window.clearInterval(rotation);
+  const startRotation = () => {
+    stopRotation();
+    if (!reducedMotion.matches) rotation = window.setInterval(() => showStory(activeIndex + 1), 8000);
+  };
+
+  previous.addEventListener('click', () => { showStory(activeIndex - 1); startRotation(); });
+  next.addEventListener('click', () => { showStory(activeIndex + 1); startRotation(); });
+  dots.addEventListener('click', (event) => {
+    const dot = event.target.closest('[data-featured-dot]');
+    if (dot) { showStory(Number(dot.dataset.featuredDot)); startRotation(); }
+  });
+  featuredCarousel.addEventListener('mouseenter', stopRotation);
+  featuredCarousel.addEventListener('mouseleave', startRotation);
+  featuredCarousel.addEventListener('focusin', stopRotation);
+  featuredCarousel.addEventListener('focusout', (event) => { if (!featuredCarousel.contains(event.relatedTarget)) startRotation(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stopRotation(); else startRotation(); });
+  reducedMotion.addEventListener('change', startRotation);
+  showStory(0);
+  startRotation();
+}
+
 // Future server-side RSS or scraped sources should normalize articles into this shape before rendering.
 const mockNewsStories = [
   { id: 'central-realignment', category: 'Central Section', headline: 'Central Section football realignment reshapes the 2026 league landscape', source: 'RefCommand Desk', publishedLabel: '18 min ago', readTime: '5 min read', image: 'assets/images/news/central-section.svg', featured: true, summary: 'A first look at the league changes crews and teams will navigate this fall.', url: '#' },
@@ -37,17 +98,17 @@ newsFeed?.addEventListener('click', (event) => {
   if (event.target.closest('.news-story__link')?.getAttribute('href') === '#') event.preventDefault();
 });
 
-// Editable prototype data for the static homepage standings rail.
-const standingsLeagues = [
-  { league: 'D-I-AA · Central East', teams: [{ name: 'Central East', record: '12-1' }, { name: 'Clovis', record: '10-3' }, { name: 'Buchanan', record: '9-4' }, { name: 'Clovis North', record: '8-5' }, { name: 'Bullard', record: '6-7' }] },
-  { league: 'D-IA · Bakersfield Christian', teams: [{ name: 'Bakersfield Christian', record: '11-2' }, { name: 'Liberty', record: '8-5' }, { name: 'Frontier', record: '7-6' }, { name: 'Garces Memorial', record: '6-7' }, { name: 'Porterville', record: '4-9' }] },
-  { league: 'D-II · Arroyo Grande', teams: [{ name: 'Arroyo Grande', record: '11-3' }, { name: 'Bakersfield', record: '10-4' }, { name: 'San Luis Obispo', record: '8-5' }, { name: 'Rio Mesa', record: '7-6' }, { name: 'Atascadero', record: '5-8' }] }
+// Replace this compact prototype data with live Central Section standings when a source is available.
+const rankingGroups = [
+  { league: 'Central East', teams: [{ rank: 1, name: 'Central East', abbreviation: 'CE', record: '12-1' }, { rank: 2, name: 'Clovis', abbreviation: 'C', record: '10-3' }, { rank: 3, name: 'Clovis North', abbreviation: 'CN', record: '9-4' }, { rank: 4, name: 'Buchanan', abbreviation: 'B', record: '8-5' }, { rank: 5, name: 'Clovis West', abbreviation: 'CW', record: '6-7' }] },
+  { league: 'Southwest Yosemite', teams: [{ rank: 1, name: 'Bakersfield Christian', abbreviation: 'BC', record: '11-2' }, { rank: 2, name: 'Liberty', abbreviation: 'L', record: '8-5' }, { rank: 3, name: 'Bakersfield', abbreviation: 'BHS', record: '7-6' }] },
+  { league: 'Tri-River', teams: [{ rank: 1, name: 'Central', abbreviation: 'CEN', record: '10-3' }, { rank: 2, name: 'Bullard', abbreviation: 'BUL', record: '8-5' }, { rank: 3, name: 'Edison', abbreviation: 'ED', record: '7-6' }] }
 ];
 
-const standingsGroups = document.querySelector('[data-standings-groups]');
+const rankingGroupsContainer = document.querySelector('[data-ranking-groups]');
 
-if (standingsGroups) {
-  standingsGroups.innerHTML = standingsLeagues.map((league) => `<section class="standing-group"><header class="standing-group-header"><span class="standing-league-mark" aria-hidden="true">RC</span><h3 class="standing-league-name">${league.league}</h3></header><ol class="standing-list">${league.teams.map((team, index) => `<li class="standing-team"><span class="standing-rank">${index + 1}</span><span class="standing-team-name">${team.name}</span><span class="standing-record">${team.record}</span></li>`).join('')}</ol><a class="standings-group-link" href="pages/rankings.html">View full standings <span aria-hidden="true">→</span></a></section>`).join('');
+if (rankingGroupsContainer) {
+  rankingGroupsContainer.innerHTML = rankingGroups.map((group) => `<section class="ranking-group"><h3>${group.league}</h3><ol>${group.teams.map((team) => `<li><span class="ranking-team"><b>${team.rank}</b><span class="ranking-abbreviation" aria-hidden="true">${team.abbreviation}</span><span class="ranking-name">${team.name}</span></span><span class="ranking-record">${team.record}</span></li>`).join('')}</ol></section>`).join('');
 }
 
 // Editable prototype data for the 2025 CIF Central Section championship finals.
