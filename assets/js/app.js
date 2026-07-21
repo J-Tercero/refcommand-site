@@ -98,17 +98,17 @@ newsFeed?.addEventListener('click', (event) => {
   if (event.target.closest('.news-story__link')?.getAttribute('href') === '#') event.preventDefault();
 });
 
-// Editable prototype data for the static homepage standings rail.
-const standingsLeagues = [
-  { league: 'D-I-AA · Central East', teams: [{ name: 'Central East', record: '12-1' }, { name: 'Clovis', record: '10-3' }, { name: 'Buchanan', record: '9-4' }, { name: 'Clovis North', record: '8-5' }, { name: 'Bullard', record: '6-7' }] },
-  { league: 'D-IA · Bakersfield Christian', teams: [{ name: 'Bakersfield Christian', record: '11-2' }, { name: 'Liberty', record: '8-5' }, { name: 'Frontier', record: '7-6' }, { name: 'Garces Memorial', record: '6-7' }, { name: 'Porterville', record: '4-9' }] },
-  { league: 'D-II · Arroyo Grande', teams: [{ name: 'Arroyo Grande', record: '11-3' }, { name: 'Bakersfield', record: '10-4' }, { name: 'San Luis Obispo', record: '8-5' }, { name: 'Rio Mesa', record: '7-6' }, { name: 'Atascadero', record: '5-8' }] }
+// Replace this compact prototype data with live Central Section standings when a source is available.
+const rankingGroups = [
+  { league: 'Central East', teams: [{ rank: 1, name: 'Central East', abbreviation: 'CE', record: '12-1' }, { rank: 2, name: 'Clovis', abbreviation: 'C', record: '10-3' }, { rank: 3, name: 'Clovis North', abbreviation: 'CN', record: '9-4' }, { rank: 4, name: 'Buchanan', abbreviation: 'B', record: '8-5' }, { rank: 5, name: 'Clovis West', abbreviation: 'CW', record: '6-7' }] },
+  { league: 'Southwest Yosemite', teams: [{ rank: 1, name: 'Bakersfield Christian', abbreviation: 'BC', record: '11-2' }, { rank: 2, name: 'Liberty', abbreviation: 'L', record: '8-5' }, { rank: 3, name: 'Bakersfield', abbreviation: 'BHS', record: '7-6' }] },
+  { league: 'Tri-River', teams: [{ rank: 1, name: 'Central', abbreviation: 'CEN', record: '10-3' }, { rank: 2, name: 'Bullard', abbreviation: 'BUL', record: '8-5' }, { rank: 3, name: 'Edison', abbreviation: 'ED', record: '7-6' }] }
 ];
 
-const standingsGroups = document.querySelector('[data-standings-groups]');
+const rankingGroupsContainer = document.querySelector('[data-ranking-groups]');
 
-if (standingsGroups) {
-  standingsGroups.innerHTML = standingsLeagues.map((league) => `<section class="standing-group"><header class="standing-group-header"><span class="standing-league-mark" aria-hidden="true">RC</span><h3 class="standing-league-name">${league.league}</h3></header><ol class="standing-list">${league.teams.map((team, index) => `<li class="standing-team"><span class="standing-rank">${index + 1}</span><span class="standing-team-name">${team.name}</span><span class="standing-record">${team.record}</span></li>`).join('')}</ol><a class="standings-group-link" href="pages/rankings.html">View full standings <span aria-hidden="true">→</span></a></section>`).join('');
+if (rankingGroupsContainer) {
+  rankingGroupsContainer.innerHTML = rankingGroups.map((group) => `<section class="ranking-group"><h3>${group.league}</h3><ol>${group.teams.map((team) => `<li><span class="ranking-team"><b>${team.rank}</b><span class="ranking-abbreviation" aria-hidden="true">${team.abbreviation}</span><span class="ranking-name">${team.name}</span></span><span class="ranking-record">${team.record}</span></li>`).join('')}</ol></section>`).join('');
 }
 
 // Editable prototype data for the 2025 CIF Central Section championship finals.
