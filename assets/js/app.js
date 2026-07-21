@@ -32,7 +32,7 @@ const nextScoreButton = document.querySelector('.score-ticker-next');
 
 if (tickerViewport && tickerTrack && previousScoreButton && nextScoreButton) {
   const monogram = (name) => name.split(' ').map((word) => word[0]).join('').slice(0, 2);
-  const teamRow = (team) => `<div class="score-team${team.winner ? ' is-winner' : ''}"><span class="team-monogram" aria-hidden="true">${monogram(team.name)}</span><span class="team-name"><span class="seed-badge">#${team.seed}</span>${team.name}</span><span class="team-record">${team.record}</span><strong class="team-score">${team.score}</strong></div>`;
+  const teamRow = (team) => `<div class="score-team${team.winner ? ' is-winner' : ''}"><span class="team-monogram" aria-hidden="true">${monogram(team.name)}</span><span class="seed-badge">#${team.seed}</span><span class="team-details"><strong class="team-name">${team.name}</strong><span class="team-record">${team.record}</span></span><strong class="team-score">${team.score}</strong></div>`;
 
   // Render the score cards from the data above so results remain easy to update.
   tickerTrack.innerHTML = championshipGames.map((game) => `<article class="score-card"><header class="score-card-header"><span>${game.status} • ${game.date}</span><span>${game.division}</span></header>${teamRow(game.home)}${teamRow(game.away)}<footer class="score-card-footer">Champion · ${game.champion}</footer></article>`).join('');
