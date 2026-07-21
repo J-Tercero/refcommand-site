@@ -13,6 +13,30 @@ document.querySelectorAll('[data-current-year]').forEach((element) => {
   element.textContent = new Date().getFullYear();
 });
 
+// Future server-side RSS or scraped sources should normalize articles into this shape before rendering.
+const mockNewsStories = [
+  { id: 'central-realignment', category: 'Central Section', headline: 'Central Section football realignment reshapes the 2026 league landscape', source: 'RefCommand Desk', publishedLabel: '18 min ago', readTime: '5 min read', image: 'assets/images/news/central-section.svg', featured: true, summary: 'A first look at the league changes crews and teams will navigate this fall.', url: '#' },
+  { id: 'preseason-rankings', category: 'Rankings', headline: 'Early preseason rankings place Central East and Clovis among the section’s top teams', source: 'Valley Football Report', publishedLabel: '42 min ago', readTime: '4 min read', image: 'assets/images/news/rankings.svg', featured: false, url: '#' },
+  { id: 'officials-rules', category: 'Officiating', headline: 'Officials prepare for key 2026 rules changes before opening week', source: 'RefCommand', publishedLabel: '1 hr ago', readTime: '6 min read', image: 'assets/images/news/officiating.svg', featured: false, url: '#' },
+  { id: 'central-valley-recruiting', category: 'Recruiting', headline: 'Central Valley prospects drawing attention ahead of senior seasons', source: 'California Prep Wire', publishedLabel: '2 hr ago', readTime: '3 min read', image: 'assets/images/news/recruiting.svg', featured: false, url: '#' },
+  { id: 'championship-rivalries', category: 'Game Report', headline: 'Last season’s championship finishes set the stage for new rivalries', source: 'Section Sports Network', publishedLabel: '3 hr ago', readTime: '4 min read', image: 'assets/images/news/game-report.svg', featured: false, url: '#' },
+  { id: 'enforcement-review', category: 'Rules', headline: 'Five enforcement situations every crew should review before kickoff', source: 'RefCommand Rules Desk', publishedLabel: '4 hr ago', readTime: '7 min read', image: 'assets/images/news/rules.svg', featured: false, url: '#' },
+  { id: 'cif-guidance', category: 'State News', headline: 'CIF updates guidance for the upcoming high school football season', source: 'California Football News', publishedLabel: '5 hr ago', readTime: '5 min read', image: 'assets/images/news/state-news.svg', featured: false, url: '#' }
+];
+
+const newsFeed = document.querySelector('[data-news-feed]');
+
+function renderNewsFeed(stories) {
+  if (!newsFeed) return;
+  newsFeed.innerHTML = stories.map((story) => `<article class="news-story${story.featured ? ' news-story--featured' : ''}"><a class="news-story__link" href="${story.url}" aria-label="Read: ${story.headline}"><img class="news-story__image" src="${story.image}" alt="${story.category} football placeholder" loading="lazy"><div class="news-story__content"><p class="news-story__category">${story.featured ? '<span class="news-story__featured">Featured</span>' : ''}${story.category}</p><h3>${story.headline}</h3>${story.summary ? `<p class="news-story__summary">${story.summary}</p>` : ''}<p class="news-story__meta">${story.source} <span aria-hidden="true">•</span> ${story.publishedLabel} <span aria-hidden="true">•</span> ${story.readTime}</p></div><span class="news-story__arrow" aria-hidden="true">→</span></a></article>`).join('');
+}
+
+renderNewsFeed(mockNewsStories);
+
+newsFeed?.addEventListener('click', (event) => {
+  if (event.target.closest('.news-story__link')?.getAttribute('href') === '#') event.preventDefault();
+});
+
 // Editable prototype data for the static homepage standings rail.
 const standingsLeagues = [
   { league: 'D-I-AA · Central East', teams: [{ name: 'Central East', record: '12-1' }, { name: 'Clovis', record: '10-3' }, { name: 'Buchanan', record: '9-4' }, { name: 'Clovis North', record: '8-5' }, { name: 'Bullard', record: '6-7' }] },
