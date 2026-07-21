@@ -13,6 +13,19 @@ document.querySelectorAll('[data-current-year]').forEach((element) => {
   element.textContent = new Date().getFullYear();
 });
 
+// Editable prototype data for the static homepage standings rail.
+const standingsLeagues = [
+  { league: 'D-I-AA · Central East', teams: [{ name: 'Central East', record: '12-1' }, { name: 'Clovis', record: '10-3' }, { name: 'Buchanan', record: '9-4' }, { name: 'Clovis North', record: '8-5' }, { name: 'Bullard', record: '6-7' }] },
+  { league: 'D-IA · Bakersfield Christian', teams: [{ name: 'Bakersfield Christian', record: '11-2' }, { name: 'Liberty', record: '8-5' }, { name: 'Frontier', record: '7-6' }, { name: 'Garces Memorial', record: '6-7' }, { name: 'Porterville', record: '4-9' }] },
+  { league: 'D-II · Arroyo Grande', teams: [{ name: 'Arroyo Grande', record: '11-3' }, { name: 'Bakersfield', record: '10-4' }, { name: 'San Luis Obispo', record: '8-5' }, { name: 'Rio Mesa', record: '7-6' }, { name: 'Atascadero', record: '5-8' }] }
+];
+
+const standingsGroups = document.querySelector('[data-standings-groups]');
+
+if (standingsGroups) {
+  standingsGroups.innerHTML = standingsLeagues.map((league) => `<section class="standing-group"><header class="standing-group-header"><span class="standing-league-mark" aria-hidden="true">RC</span><h3 class="standing-league-name">${league.league}</h3></header><ol class="standing-list">${league.teams.map((team, index) => `<li class="standing-team"><span class="standing-rank">${index + 1}</span><span class="standing-team-name">${team.name}</span><span class="standing-record">${team.record}</span></li>`).join('')}</ol><a class="standings-group-link" href="pages/rankings.html">View full standings <span aria-hidden="true">→</span></a></section>`).join('');
+}
+
 // Editable prototype data for the 2025 CIF Central Section championship finals.
 const championshipGames = [
   { date: 'NOV 21', status: 'FINAL', division: 'CIF-CS D-I-AA', home: { seed: 1, name: 'Central East', record: '12-1', score: 70, winner: true }, away: { seed: 2, name: 'Clovis', record: '10-3', score: 35, winner: false }, champion: 'Central East' },
