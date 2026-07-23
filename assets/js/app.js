@@ -98,17 +98,47 @@ newsFeed?.addEventListener('click', (event) => {
   if (event.target.closest('.news-story__link')?.getAttribute('href') === '#') event.preventDefault();
 });
 
-// Replace this compact prototype data with live Central Section standings when a source is available.
-const rankingGroups = [
-  { league: 'Central East', teams: [{ rank: 1, name: 'Central East', abbreviation: 'CE', record: '12-1' }, { rank: 2, name: 'Clovis', abbreviation: 'C', record: '10-3' }, { rank: 3, name: 'Clovis North', abbreviation: 'CN', record: '9-4' }, { rank: 4, name: 'Buchanan', abbreviation: 'B', record: '8-5' }, { rank: 5, name: 'Clovis West', abbreviation: 'CW', record: '6-7' }] },
-  { league: 'Southwest Yosemite', teams: [{ rank: 1, name: 'Bakersfield Christian', abbreviation: 'BC', record: '11-2' }, { rank: 2, name: 'Liberty', abbreviation: 'L', record: '8-5' }, { rank: 3, name: 'Bakersfield', abbreviation: 'BHS', record: '7-6' }] },
-  { league: 'Tri-River', teams: [{ rank: 1, name: 'Central', abbreviation: 'CEN', record: '10-3' }, { rank: 2, name: 'Bullard', abbreviation: 'BUL', record: '8-5' }, { rank: 3, name: 'Edison', abbreviation: 'ED', record: '7-6' }] }
-];
-
+// Shared mock league data is kept in standings-data.js so it can later be replaced by a maintained source.
+const rankingGroups = window.refCommandStandingsData || [];
 const rankingGroupsContainer = document.querySelector('[data-ranking-groups]');
 
 if (rankingGroupsContainer) {
-  rankingGroupsContainer.innerHTML = rankingGroups.map((group) => `<section class="ranking-group"><h3>${group.league}</h3><ol>${group.teams.map((team) => `<li><span class="ranking-team"><b>${team.rank}</b><span class="ranking-abbreviation" aria-hidden="true">${team.abbreviation}</span><span class="ranking-name">${team.name}</span></span><span class="ranking-record">${team.record}</span></li>`).join('')}</ol></section>`).join('');
+  rankingGroupsContainer.innerHTML = rankingGroups.map((group) => `<section class="ranking-group"><h3><a href="pages/rankings.html?league=${group.id}">${group.name}</a></h3><ol>${group.teams.slice(0, 5).map((team, index) => `<li><span class="ranking-team"><b>${index + 1}</b><span class="ranking-abbreviation" aria-hidden="true">${team.initials}</span><span class="ranking-name">${team.name}</span></span><span class="ranking-record">${team.overallRecord}</span></li>`).join('')}</ol></section>`).join('');
+}
+
+const standingsApp = document.querySelector('[data-standings-app]');
+if (standingsApp && rankingGroups.length) {
+  const tabs = standingsApp.querySelector('[data-league-tabs]');
+  const select = standingsApp.querySelector('[data-league-select]');
+  const content = standingsApp.querySelector('[data-league-content]');
+  const views = [{ id: 'league', label: 'League Standings' }, { id: 'overall', label: 'Overall Records' }, { id: 'division', label: 'Division Rankings' }];
+  const params = new URLSearchParams(window.location.search);
+  let leagueId = rankingGroups.some((league) => league.id === params.get('league')) ? params.get('league') : rankingGroups[0].id;
+  let viewId = views.some((view) => view.id === params.get('view')) ? params.get('view') : 'league';
+  const recordWins = (record) => Number(record.split('-')[0]);
+
+  function setUrl() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('league', leagueId);
+    url.searchParams.set('view', viewId);
+    window.history.pushState({ leagueId, viewId }, '', url);
+  }
+  function render() {
+    const league = rankingGroups.find((item) => item.id === leagueId);
+    tabs.innerHTML = rankingGroups.map((item) => `<button class="league-tab${item.id === leagueId ? ' is-active' : ''}" type="button" role="tab" aria-selected="${item.id === leagueId}" data-league-id="${item.id}">${item.name}</button>`).join('');
+    select.innerHTML = rankingGroups.map((item) => `<option value="${item.id}"${item.id === leagueId ? ' selected' : ''}>${item.name}</option>`).join('');
+    const teams = [...league.teams].sort((a, b) => viewId === 'overall' ? recordWins(b.overallRecord) - recordWins(a.overallRecord) || Number(b.winPct) - Number(a.winPct) : viewId === 'division' ? a.divisionRank - b.divisionRank : recordWins(b.leagueRecord) - recordWins(a.leagueRecord) || Number(b.winPct) - Number(a.winPct));
+    const headers = viewId === 'overall' ? '<th scope="col">Overall</th><th scope="col">Win %</th><th scope="col">League</th>' : viewId === 'division' ? '<th scope="col">Division</th><th scope="col">Div. rank</th><th scope="col">Section rank</th>' : '<th scope="col">League</th><th scope="col">Overall</th><th scope="col">Win %</th><th scope="col">PF</th><th scope="col">PA</th><th scope="col">Streak</th><th scope="col">Division</th><th scope="col">Div. rank</th><th scope="col">Section rank</th>';
+    const cells = (team) => viewId === 'overall' ? `<td><strong>${team.overallRecord}</strong></td><td>${team.winPct}</td><td>${team.leagueRecord}</td>` : viewId === 'division' ? `<td>${team.division}</td><td>#${team.divisionRank}</td><td>#${team.sectionRank}</td>` : `<td><strong>${team.leagueRecord}</strong></td><td>${team.overallRecord}</td><td>${team.winPct}</td><td>${team.pointsFor}</td><td>${team.pointsAgainst}</td><td>${team.streak}</td><td>${team.division}</td><td>#${team.divisionRank}</td><td>#${team.sectionRank}</td>`;
+    content.innerHTML = `<section class="league-identity" aria-live="polite"><div><p class="eyebrow">${league.affiliation}</p><h2>${league.name}</h2><p class="league-season">2026 Football Standings <span>•</span> ${league.teams.length} teams</p></div><div class="league-status"><span class="mock-badge">Mock Data · Preseason Preview</span><small>Last updated: ${league.updated}</small></div></section><div class="standings-views" role="tablist" aria-label="Standings view">${views.map((view) => `<button type="button" role="tab" aria-selected="${view.id === viewId}" class="standings-view${view.id === viewId ? ' is-active' : ''}" data-view-id="${view.id}">${view.label}</button>`).join('')}</div>${viewId === 'overall' ? '<p class="standings-note">Ordered by mock overall record within this selected league—not an official Central Section ranking.</p>' : ''}${viewId === 'division' ? '<p class="standings-note">Division placements and rankings are placeholders until a verified source is connected.</p>' : ''}<div class="standings-table-wrap" tabindex="0" aria-label="Scrollable standings table"><table class="standings-table"><caption class="sr-only">${league.name} ${viewId} standings, mock data</caption><thead><tr><th scope="col">Rank</th><th scope="col">School</th>${headers}<th scope="col"><span class="sr-only">Team details</span></th></tr></thead><tbody>${teams.map((team, index) => `<tr${index === 0 ? ' class="is-leader"' : ''}><td data-label="Rank"><span class="table-rank">${index + 1}</span></td><th scope="row" data-label="School"><span class="team-cell"><span class="team-mark" aria-hidden="true">${team.initials}</span><span>${team.name}</span></span></th>${cells(team)}<td data-label=""><button type="button" class="view-team" aria-label="View ${team.name} team details (coming soon)">View Team <span aria-hidden="true">→</span></button></td></tr>`).join('')}</tbody></table></div><p class="standings-disclaimer">All records, points, ranks, and division placements on this page are fictional mock data for a preseason product preview.</p>`;
+  }
+  function chooseLeague(id, update = true) { leagueId = id; if (update) setUrl(); render(); }
+  function chooseView(id, update = true) { viewId = id; if (update) setUrl(); render(); }
+  tabs.addEventListener('click', (event) => { const button = event.target.closest('[data-league-id]'); if (button) chooseLeague(button.dataset.leagueId); });
+  select.addEventListener('change', () => chooseLeague(select.value));
+  content.addEventListener('click', (event) => { const button = event.target.closest('[data-view-id]'); if (button) chooseView(button.dataset.viewId); });
+  window.addEventListener('popstate', () => { const state = new URLSearchParams(window.location.search); leagueId = rankingGroups.some((league) => league.id === state.get('league')) ? state.get('league') : rankingGroups[0].id; viewId = views.some((view) => view.id === state.get('view')) ? state.get('view') : 'league'; render(); });
+  render();
 }
 
 // Editable prototype data for the 2025 CIF Central Section championship finals.
