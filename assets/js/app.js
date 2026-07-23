@@ -1,4 +1,4 @@
-// Shared sport-media shell: one header treatment and compact score strip on every public route.
+// Shared sport-media shell: one header treatment and one reusable scoreboard on every public route.
 const isPage = window.location.pathname.includes('/pages/');
 const root = isPage ? '../' : '';
 const header = document.querySelector('.site-header');
@@ -11,10 +11,6 @@ if (header) {
     ['Rules', `${root}pages/rules.html`.replace('pages/pages/', 'pages/'), 'rules.html'], ['Quizzes', `${root}pages/quizzes.html`.replace('pages/pages/', 'pages/'), 'quizzes.html']
   ];
   nav.innerHTML = links.map(([label, href, file]) => `<a href="${href}"${current === file ? ' aria-current="page"' : ''}>${label}</a>`).join('');
-  const strip = document.createElement('section');
-  strip.className = 'global-score-strip'; strip.setAttribute('aria-label', 'Live scores');
-  strip.innerHTML = `<div class="global-score-strip__inner"><span class="global-score-strip__live">Live Scores</span><div class="global-score-strip__games"><span class="global-score-strip__game"><span>7:34</span><span class="global-score-strip__status">Q3</span><b>Central HS 21</b><b>Westview 14</b></span><span class="global-score-strip__game"><b>Riverside 17</b><b>Northfield 10</b><span class="global-score-strip__status">Q4</span></span><span class="global-score-strip__game"><b>Lakeside 28</b><b>Hillcrest 7</b><span class="global-score-strip__status">Final</span></span></div><a class="global-score-strip__all" href="${root}pages/scores.html">View all scores ›</a></div>`;
-  header.after(strip);
 }
 
 const toggle = document.querySelector('.nav-toggle');
@@ -160,77 +156,64 @@ if (standingsApp && rankingGroups.length) {
   render();
 }
 
-// Editable prototype data for the 2025 CIF Central Section championship finals.
-const championshipGames = [
-  { date: 'NOV 21', status: 'FINAL', division: 'CIF-CS D-I-AA', home: { seed: 1, name: 'Central East', record: '12-1', score: 70, winner: true }, away: { seed: 2, name: 'Clovis', record: '10-3', score: 35, winner: false }, champion: 'Central East' },
-  { date: 'NOV 21', status: 'FINAL', division: 'CIF-CS D-I-A', home: { seed: 1, name: 'Bakersfield Christian', record: '11-2', score: 38, winner: true }, away: { seed: 3, name: 'Liberty', record: '8-5', score: 16, winner: false }, champion: 'Bakersfield Christian' },
-  { date: 'NOV 28', status: 'FINAL', division: 'CIF-CS D-II', home: { seed: 4, name: 'Arroyo Grande', record: '11-3', score: 23, winner: true }, away: { seed: 2, name: 'Bakersfield', record: '10-4', score: 20, winner: false }, champion: 'Arroyo Grande' },
-  { date: 'NOV 28', status: 'FINAL', division: 'CIF-CS D-III', home: { seed: 5, name: 'Kennedy', record: '11-3', score: 49, winner: true }, away: { seed: 6, name: 'Independence', record: '9-5', score: 13, winner: false }, champion: 'Kennedy' },
-  { date: 'NOV 28', status: 'FINAL', division: 'CIF-CS D-IV', home: { seed: 2, name: 'Immanuel', record: '12-2', score: 48, winner: true }, away: { seed: 1, name: 'Templeton', record: '12-2', score: 7, winner: false }, champion: 'Immanuel' },
-  { date: 'NOV 28', status: 'FINAL', division: 'CIF-CS D-V', home: { seed: 4, name: 'Bishop Union', record: '12-2', score: 69, winner: true }, away: { seed: 2, name: 'Woodlake', record: '11-3', score: 21, winner: false }, champion: 'Bishop Union' },
-  { date: 'NOV 28', status: 'FINAL', division: 'CIF-CS D-VI', home: { seed: 1, name: 'Minarets', record: '12-2', score: 21, winner: true }, away: { seed: 2, name: 'Orosi', record: '11-3', score: 14, winner: false }, champion: 'Minarets' },
-  { date: 'NOV 21', status: 'FINAL', division: 'CIF-CS 8-PLAYER', home: { seed: 1, name: 'Fresno Christian', record: '12-0', score: 78, winner: true }, away: { seed: 2, name: 'Immanuel Christian', record: '10-2', score: 14, winner: false }, champion: 'Fresno Christian' }
+// Centralized prototype score data. Replace these weekly snapshots with a verified score feed when available.
+const scoreWeeks = [
+  { label: 'WEEK 1', games: [
+    { league: 'TRAC', state: 'live', detail: '3RD · 2:14', possession: 'Central possession', away: { name: 'Central East', initials: 'CE', record: '1-0', rank: 2, score: 21 }, home: { name: 'Clovis', initials: 'C', record: '0-1', rank: 5, score: 17 } },
+    { league: 'CMAC', state: 'final', detail: 'FINAL', away: { name: 'Bakersfield Christian', initials: 'BC', record: '1-0', rank: 4, score: 28, winner: true }, home: { name: 'Liberty', initials: 'L', record: '0-1', score: 14 } },
+    { league: 'NYL', state: 'upcoming', detail: 'FRI · 7:30 PM', venue: 'Veterans Memorial Stadium', away: { name: 'Clovis West', initials: 'CW', record: '0-0', rank: 3 }, home: { name: 'Buchanan', initials: 'B', record: '0-0', rank: 6 } },
+    { league: 'SEQUOIA', state: 'final', detail: 'FINAL', away: { name: 'Arroyo Grande', initials: 'AG', record: '1-0', score: 23, winner: true }, home: { name: 'Bakersfield', initials: 'BHS', record: '0-1', score: 20 } }
+  ] },
+  { label: 'WEEK 2', games: [
+    { league: 'TRAC', state: 'upcoming', detail: 'FRI · 7:00 PM', venue: 'Clovis High Stadium', away: { name: 'Central East', initials: 'CE', record: '1-0', rank: 2 }, home: { name: 'Buchanan', initials: 'B', record: '0-0', rank: 6 } },
+    { league: 'CMAC', state: 'postponed', detail: 'POSTPONED', venue: 'Rescheduled date TBD', away: { name: 'Liberty', initials: 'L', record: '0-1' }, home: { name: 'Bakersfield Christian', initials: 'BC', record: '1-0', rank: 4 } },
+    { league: 'SOUTH YOSEMITE', state: 'upcoming', detail: 'SAT · 6:00 PM', away: { name: 'Minarets', initials: 'M', record: '0-0' }, home: { name: 'Orosi', initials: 'O', record: '0-0' } }
+  ] }
 ];
 
-const tickerViewport = document.querySelector('.score-ticker-viewport');
-const tickerTrack = document.querySelector('.score-ticker-track');
-const previousScoreButton = document.querySelector('.score-ticker-prev');
-const nextScoreButton = document.querySelector('.score-ticker-next');
+if (header) {
+  const strip = document.createElement('section');
+  strip.className = 'global-score-strip';
+  strip.setAttribute('aria-labelledby', 'global-scores-title');
+  strip.innerHTML = `<div class="global-score-strip__inner"><div class="scoreboard-control"><span id="global-scores-title">Scores</span><strong data-score-week>Week 1</strong><div class="scoreboard-control__weeks"><button type="button" data-week-prev aria-label="Show previous score week">‹</button><button type="button" data-week-next aria-label="Show next score week">›</button></div></div><button class="scoreboard-arrow scoreboard-arrow--prev" type="button" data-score-prev aria-label="Show previous score cards">‹</button><div class="scoreboard-viewport" tabindex="0" role="region" aria-label="Week 1 football scores"><div class="scoreboard-track" aria-live="polite"></div></div><button class="scoreboard-arrow scoreboard-arrow--next" type="button" data-score-next aria-label="Show next score cards">›</button><a class="scoreboard-all" href="${root}pages/scores.html">View all scores <span aria-hidden="true">→</span></a></div>`;
+  header.after(strip);
 
-if (tickerViewport && tickerTrack && previousScoreButton && nextScoreButton) {
-  const monogram = (name) => name.split(' ').map((word) => word[0]).join('').slice(0, 2);
-  const teamRow = (team) => `<div class="score-team${team.winner ? ' is-winner' : ''}"><span class="team-monogram" aria-hidden="true">${monogram(team.name)}</span><span class="seed-badge">#${team.seed}</span><span class="team-details"><strong class="team-name">${team.name}</strong><span class="team-record">${team.record}</span></span><strong class="team-score">${team.score}</strong></div>`;
-
-  // Render the score cards from the data above so results remain easy to update.
-  tickerTrack.innerHTML = championshipGames.map((game) => `<article class="score-card"><header class="score-card-header"><span>${game.status} • ${game.date}</span><span>${game.division}</span></header>${teamRow(game.home)}${teamRow(game.away)}<footer class="score-card-footer">Champion · ${game.champion}</footer></article>`).join('');
-
-  const updateTickerState = () => {
-    const maxScroll = tickerViewport.scrollWidth - tickerViewport.clientWidth;
-    const atStart = tickerViewport.scrollLeft <= 1;
-    const atEnd = tickerViewport.scrollLeft >= maxScroll - 1;
-    previousScoreButton.disabled = atStart;
-    nextScoreButton.disabled = atEnd || maxScroll <= 1;
-    tickerViewport.classList.toggle('has-left-overflow', !atStart);
-    tickerViewport.classList.toggle('has-right-overflow', !atEnd && maxScroll > 1);
+  const viewport = strip.querySelector('.scoreboard-viewport');
+  const track = strip.querySelector('.scoreboard-track');
+  const weekLabel = strip.querySelector('[data-score-week]');
+  const weekPrevious = strip.querySelector('[data-week-prev]');
+  const weekNext = strip.querySelector('[data-week-next]');
+  const cardPrevious = strip.querySelector('[data-score-prev]');
+  const cardNext = strip.querySelector('[data-score-next]');
+  let weekIndex = 0;
+  const teamRow = (team, state) => `<div class="scoreboard-team${team.winner ? ' is-winner' : ''}"><span class="scoreboard-mark" aria-label="${team.name} initials">${team.initials}</span><span class="scoreboard-team__name">${team.rank ? `<b>#${team.rank}</b> ` : ''}${team.name}<small>${team.record}</small></span><strong>${state === 'upcoming' || state === 'postponed' ? '—' : team.score}</strong></div>`;
+  const render = () => {
+    const week = scoreWeeks[weekIndex];
+    weekLabel.textContent = week.label;
+    viewport.setAttribute('aria-label', `${week.label} football scores`);
+    track.innerHTML = week.games.map((game) => `<article class="scoreboard-card scoreboard-card--${game.state}"><header><span>${game.league}</span><strong>${game.state === 'live' ? '<i>Live</i> ' : ''}${game.detail}</strong></header>${teamRow(game.away, game.state)}${teamRow(game.home, game.state)}${game.possession ? `<p class="scoreboard-note"><span aria-hidden="true">●</span> ${game.possession}</p>` : game.venue ? `<p class="scoreboard-note">${game.venue}</p>` : ''}</article>`).join('');
+    viewport.scrollLeft = 0;
+    weekPrevious.disabled = weekIndex === 0;
+    weekNext.disabled = weekIndex === scoreWeeks.length - 1;
+    updateCards();
   };
-  const scrollByCards = (direction) => {
-    const cardWidth = tickerTrack.querySelector('.score-card').getBoundingClientRect().width;
-    const cardCount = window.matchMedia('(max-width: 699px)').matches ? 1 : 2;
-    tickerViewport.scrollBy({ left: direction * cardWidth * cardCount, behavior: 'smooth' });
+  const updateCards = () => {
+    const max = viewport.scrollWidth - viewport.clientWidth;
+    cardPrevious.disabled = viewport.scrollLeft <= 1;
+    cardNext.disabled = max <= 1 || viewport.scrollLeft >= max - 1;
   };
-
-  // Native scroll, buttons, keyboard controls, and mouse dragging keep the ticker user-controlled.
-  previousScoreButton.addEventListener('click', () => scrollByCards(-1));
-  nextScoreButton.addEventListener('click', () => scrollByCards(1));
-  tickerViewport.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      event.preventDefault();
-      scrollByCards(event.key === 'ArrowLeft' ? -1 : 1);
-    }
-  });
-  tickerViewport.addEventListener('wheel', (event) => {
-    if (event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
-    event.preventDefault();
-    tickerViewport.scrollBy({ left: event.deltaY, behavior: 'auto' });
-  }, { passive: false });
-  let dragStart = 0;
-  let dragScrollStart = 0;
-  tickerViewport.addEventListener('pointerdown', (event) => {
-    if (event.pointerType === 'touch') return;
-    dragStart = event.clientX;
-    dragScrollStart = tickerViewport.scrollLeft;
-    tickerViewport.classList.add('is-dragging');
-    tickerViewport.setPointerCapture(event.pointerId);
-  });
-  tickerViewport.addEventListener('pointermove', (event) => {
-    if (tickerViewport.classList.contains('is-dragging')) tickerViewport.scrollLeft = dragScrollStart - (event.clientX - dragStart);
-  });
-  const endDrag = () => tickerViewport.classList.remove('is-dragging');
-  tickerViewport.addEventListener('pointerup', endDrag);
-  tickerViewport.addEventListener('pointercancel', endDrag);
-  tickerViewport.addEventListener('scroll', updateTickerState, { passive: true });
-  window.addEventListener('resize', updateTickerState);
-  updateTickerState();
+  const moveCards = (direction) => {
+    const card = track.querySelector('.scoreboard-card');
+    if (card) viewport.scrollBy({ left: direction * card.getBoundingClientRect().width, behavior: 'smooth' });
+  };
+  weekPrevious.addEventListener('click', () => { weekIndex -= 1; render(); });
+  weekNext.addEventListener('click', () => { weekIndex += 1; render(); });
+  cardPrevious.addEventListener('click', () => moveCards(-1));
+  cardNext.addEventListener('click', () => moveCards(1));
+  viewport.addEventListener('keydown', (event) => { if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); moveCards(event.key === 'ArrowLeft' ? -1 : 1); } });
+  viewport.addEventListener('scroll', updateCards, { passive: true });
+  window.addEventListener('resize', updateCards);
+  render();
 }
 
 // Local-only quiz hub prototype data and interactions. Replace with reviewed quiz service data when available.
