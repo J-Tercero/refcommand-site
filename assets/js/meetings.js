@@ -1,6 +1,7 @@
 (() => {
   const meetings = window.refCommandMeetings || [];
-  const root = location.pathname.includes('/meetings/2026-07-20/') ? '../../' : '../';
+  const isMeetingDetail = /\/meetings\/[^/]+(?:\/index\.html)?\/?$/.test(location.pathname);
+  const root = isMeetingDetail ? '../../' : '../';
   const esc = (value) => String(value).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const badge = (label) => label ? `<p class="meeting-label">${esc(label)}</p>` : '';
   const stats = (m) => `<ul class="meeting-stats"><li>${m.topicCount} Topics</li>${m.actionItemCount ? `<li>${m.actionItemCount} Action Items</li>` : ''}<li>${m.duration}</li></ul>`;
