@@ -1,16 +1,16 @@
 // Shared sport-media shell: one header treatment and compact score strip on every public route.
-const isPage = window.location.pathname.includes('/pages/');
-const root = isPage ? '../' : '';
+const path = window.location.pathname;
+const root = path.includes('/meetings/2026-07-20/') ? '../../' : (path.includes('/pages/') || path.includes('/meetings/') ? '../' : '');
 const header = document.querySelector('.site-header');
 if (header) {
   const nav = header.querySelector('.site-nav');
-  const current = window.location.pathname.split('/').pop() || 'index.html';
+  const current = path.includes('/meetings/') ? 'meetings' : (path.split('/').pop() || 'index.html');
   const links = [
     ['Home', `${root}index.html`, 'index.html'], ['Scores', `${root}pages/scores.html`.replace('pages/pages/', 'pages/'), 'scores.html'],
     ['Standings', `${root}pages/rankings.html`.replace('pages/pages/', 'pages/'), 'rankings.html'], ['News', `${root}pages/news.html`.replace('pages/pages/', 'pages/'), 'news.html'],
-    ['Rules', `${root}pages/rules.html`.replace('pages/pages/', 'pages/'), 'rules.html'], ['Quizzes', `${root}pages/quizzes.html`.replace('pages/pages/', 'pages/'), 'quizzes.html']
+    ['Rules', `${root}pages/rules.html`.replace('pages/pages/', 'pages/'), 'rules.html'], ['Meetings', `${root}meetings/`, 'meetings'], ['Quizzes', `${root}pages/quizzes.html`.replace('pages/pages/', 'pages/'), 'quizzes.html']
   ];
-  nav.innerHTML = links.map(([label, href, file]) => `<a href="${href}"${current === file ? ' aria-current="page"' : ''}>${label}</a>`).join('');
+  nav.innerHTML = links.map(([label, href, file]) => `<a href="${href}"${(current === file || (file === 'meetings' && current === 'meetings')) ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const strip = document.createElement('section');
   strip.className = 'global-score-strip'; strip.setAttribute('aria-label', 'Live scores');
   strip.innerHTML = `<div class="global-score-strip__inner"><span class="global-score-strip__live">Live Scores</span><div class="global-score-strip__games"><span class="global-score-strip__game"><span>7:34</span><span class="global-score-strip__status">Q3</span><b>Central HS 21</b><b>Westview 14</b></span><span class="global-score-strip__game"><b>Riverside 17</b><b>Northfield 10</b><span class="global-score-strip__status">Q4</span></span><span class="global-score-strip__game"><b>Lakeside 28</b><b>Hillcrest 7</b><span class="global-score-strip__status">Final</span></span></div><a class="global-score-strip__all" href="${root}pages/scores.html">View all scores ›</a></div>`;
