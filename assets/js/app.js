@@ -1,14 +1,21 @@
 // Shared sport-media shell: one header treatment and compact score strip on every public route.
 const path = window.location.pathname;
-const root = path.includes('/meetings/2026-07-20/') ? '../../' : (path.includes('/pages/') || path.includes('/meetings/') ? '../' : '');
+const isMeetingDetail = /\/meetings\/[^/]+(?:\/index\.html)?\/?$/.test(path);
+const root = isMeetingDetail ? '../../' : (path.includes('/pages/') || path.includes('/meetings/') ? '../' : '');
 const header = document.querySelector('.site-header');
 if (header) {
   const nav = header.querySelector('.site-nav');
   const current = path.includes('/meetings/') ? 'meetings' : (path.split('/').pop() || 'index.html');
   const links = [
-    ['Home', `${root}index.html`, 'index.html'], ['Scores', `${root}pages/scores.html`.replace('pages/pages/', 'pages/'), 'scores.html'],
-    ['Standings', `${root}pages/rankings.html`.replace('pages/pages/', 'pages/'), 'rankings.html'], ['News', `${root}pages/news.html`.replace('pages/pages/', 'pages/'), 'news.html'],
-    ['Rules', `${root}pages/rules.html`.replace('pages/pages/', 'pages/'), 'rules.html'], ['Meetings', `${root}meetings/`, 'meetings'], ['Quizzes', `${root}pages/quizzes.html`.replace('pages/pages/', 'pages/'), 'quizzes.html']
+    ['Home', `${root}index.html`, 'index.html'],
+    ['Scores', `${root}pages/scores.html`, 'scores.html'],
+    ['Standings', `${root}pages/rankings.html`, 'rankings.html'],
+    ['News', `${root}pages/news.html`, 'news.html'],
+    ['Rules Hub', `${root}pages/rules.html`, 'rules.html'],
+    ['Meetings', `${root}meetings/`, 'meetings'],
+    ['Quizzes', `${root}pages/quizzes.html`, 'quizzes.html'],
+    ['Pregame', `${root}pages/pregame.html`, 'pregame.html'],
+    ['Resources', `${root}pages/resources.html`, 'resources.html']
   ];
   nav.innerHTML = links.map(([label, href, file]) => `<a href="${href}"${(current === file || (file === 'meetings' && current === 'meetings')) ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const strip = document.createElement('section');
@@ -36,7 +43,7 @@ document.querySelectorAll('[data-current-year]').forEach((element) => {
 const featuredStories = [
   { id: 'week-one-enforcement', category: 'Rules Focus', title: 'Five NFHS enforcement situations every referee should master before Week 1.', summary: "The rare enforcement situations aren't difficult if you recognize them early. Review intentional grounding, post-scrimmage kick enforcement, momentum, illegal participation and double fouls before opening night.", image: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1800&q=85', link: 'pages/rules.html', videoLink: '', date: 'August 11, 2026', author: 'RefCommand Rules Desk' },
   { id: 'rivalry-pregame', category: 'Pregame', title: 'Crew pregame checklist for rivalry week.', summary: 'A complete pregame structure covering clock management, communication, goal line mechanics and special situations. Walk onto the field with every assignment settled.', image: 'https://images.unsplash.com/photo-1566577739112-5180d4bf9390?auto=format&fit=crop&w=1800&q=85', link: 'pages/pregame.html', videoLink: '', date: 'August 14, 2026', author: 'RefCommand Crew Desk' },
-  { id: 'targeting-film', category: 'Video Breakdown', title: 'Was this targeting?', summary: "Frame-by-frame rules analysis of one of last week's most controversial plays. See how the indicators build from approach through contact.", image: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=1800&q=85', link: 'pages/rules.html', videoLink: '#', date: 'August 16, 2026', author: 'RefCommand Film Room' },
+  { id: 'targeting-film', category: 'Video Breakdown', title: 'Was this targeting?', summary: "Frame-by-frame rules analysis of one of last week's most controversial plays. See how the indicators build from approach through contact.", image: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=1800&q=85', link: 'pages/rules.html', videoLink: '', date: 'August 16, 2026', author: 'RefCommand Film Room' },
   { id: 'sportsmanship-emphasis', category: 'Points of Emphasis', title: 'Officials should expect increased focus on sportsmanship this season.', summary: 'The best crews set the standard early, communicate clearly and respond consistently when the temperature rises.', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1800&q=85', link: 'pages/news.html', videoLink: '', date: 'August 18, 2026', author: 'RefCommand Editorial' },
   { id: 'central-opening-week', category: 'Local News', title: 'Central Section crews preparing for opening week assignments.', summary: 'Assignments are taking shape as crews focus their final preparation on communication, travel and Friday-night readiness.', image: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1800&q=85', link: 'pages/news.html', videoLink: '', date: 'August 20, 2026', author: 'Central Section Desk' }
 ];
@@ -95,13 +102,13 @@ if (featuredCarousel) {
 
 // Future server-side RSS or scraped sources should normalize articles into this shape before rendering.
 const mockNewsStories = [
-  { id: 'central-realignment', category: 'Central Section', headline: 'Central Section football realignment reshapes the 2026 league landscape', source: 'RefCommand Desk', publishedLabel: '18 min ago', readTime: '5 min read', image: 'assets/images/news/central-section.svg', featured: true, summary: 'A first look at the league changes crews and teams will navigate this fall.', url: '#' },
-  { id: 'preseason-rankings', category: 'Rankings', headline: 'Early preseason rankings place Central East and Clovis among the section’s top teams', source: 'Valley Football Report', publishedLabel: '42 min ago', readTime: '4 min read', image: 'assets/images/news/rankings.svg', featured: false, url: '#' },
-  { id: 'officials-rules', category: 'Officiating', headline: 'Officials prepare for key 2026 rules changes before opening week', source: 'RefCommand', publishedLabel: '1 hr ago', readTime: '6 min read', image: 'assets/images/news/officiating.svg', featured: false, url: '#' },
-  { id: 'central-valley-recruiting', category: 'Recruiting', headline: 'Central Valley prospects drawing attention ahead of senior seasons', source: 'California Prep Wire', publishedLabel: '2 hr ago', readTime: '3 min read', image: 'assets/images/news/recruiting.svg', featured: false, url: '#' },
-  { id: 'championship-rivalries', category: 'Game Report', headline: 'Last season’s championship finishes set the stage for new rivalries', source: 'Section Sports Network', publishedLabel: '3 hr ago', readTime: '4 min read', image: 'assets/images/news/game-report.svg', featured: false, url: '#' },
-  { id: 'enforcement-review', category: 'Rules', headline: 'Five enforcement situations every crew should review before kickoff', source: 'RefCommand Rules Desk', publishedLabel: '4 hr ago', readTime: '7 min read', image: 'assets/images/news/rules.svg', featured: false, url: '#' },
-  { id: 'cif-guidance', category: 'State News', headline: 'CIF updates guidance for the upcoming high school football season', source: 'California Football News', publishedLabel: '5 hr ago', readTime: '5 min read', image: 'assets/images/news/state-news.svg', featured: false, url: '#' }
+  { id: 'central-realignment', category: 'Central Section', headline: 'Central Section football realignment reshapes the 2026 league landscape', source: 'RefCommand Desk', publishedLabel: '18 min ago', readTime: '5 min read', image: 'assets/images/news/central-section.svg', featured: true, summary: 'A first look at the league changes crews and teams will navigate this fall.', url: 'pages/news.html' },
+  { id: 'preseason-rankings', category: 'Rankings', headline: 'Early preseason rankings place Central East and Clovis among the section’s top teams', source: 'Valley Football Report', publishedLabel: '42 min ago', readTime: '4 min read', image: 'assets/images/news/rankings.svg', featured: false, url: 'pages/news.html' },
+  { id: 'officials-rules', category: 'Officiating', headline: 'Officials prepare for key 2026 rules changes before opening week', source: 'RefCommand', publishedLabel: '1 hr ago', readTime: '6 min read', image: 'assets/images/news/officiating.svg', featured: false, url: 'pages/news.html' },
+  { id: 'central-valley-recruiting', category: 'Recruiting', headline: 'Central Valley prospects drawing attention ahead of senior seasons', source: 'California Prep Wire', publishedLabel: '2 hr ago', readTime: '3 min read', image: 'assets/images/news/recruiting.svg', featured: false, url: 'pages/news.html' },
+  { id: 'championship-rivalries', category: 'Game Report', headline: 'Last season’s championship finishes set the stage for new rivalries', source: 'Section Sports Network', publishedLabel: '3 hr ago', readTime: '4 min read', image: 'assets/images/news/game-report.svg', featured: false, url: 'pages/news.html' },
+  { id: 'enforcement-review', category: 'Rules', headline: 'Five enforcement situations every crew should review before kickoff', source: 'RefCommand Rules Desk', publishedLabel: '4 hr ago', readTime: '7 min read', image: 'assets/images/news/rules.svg', featured: false, url: 'pages/news.html' },
+  { id: 'cif-guidance', category: 'State News', headline: 'CIF updates guidance for the upcoming high school football season', source: 'California Football News', publishedLabel: '5 hr ago', readTime: '5 min read', image: 'assets/images/news/state-news.svg', featured: false, url: 'pages/news.html' }
 ];
 
 const newsFeed = document.querySelector('[data-news-feed]');
@@ -113,9 +120,6 @@ function renderNewsFeed(stories) {
 
 renderNewsFeed(mockNewsStories);
 
-newsFeed?.addEventListener('click', (event) => {
-  if (event.target.closest('.news-story__link')?.getAttribute('href') === '#') event.preventDefault();
-});
 
 // Shared mock league data is kept in standings-data.js so it can later be replaced by a maintained source.
 const rankingGroups = window.refCommandStandingsData || [];
