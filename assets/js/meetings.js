@@ -6,7 +6,8 @@
   const badge = (label) => label ? `<p class="meeting-label">${esc(label)}</p>` : '';
   const stats = (m) => `<ul class="meeting-stats"><li>${m.topicCount} Topics</li>${m.actionItemCount ? `<li>${m.actionItemCount} Action Items</li>` : ''}<li>${m.duration}</li></ul>`;
   const date = m => `<div class="meeting-date"><b>${m.month}</b><strong>${m.day}</strong><span>${m.year}</span></div>`;
-  const card = m => `<article class="meeting-card${m.isFeatured ? ' meeting-card--featured' : ''}">${m.isFeatured ? '<span class="meeting-new">New</span>' : ''}${date(m)}<div class="meeting-card__body"><p class="meeting-association">${esc(m.association)}</p><h3>${esc(m.title)}</h3><p>${esc(m.description)}</p>${stats(m)}${m.isFeatured ? `<div class="meeting-chips">${m.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>` : ''}</div>${m.isPlaceholder ? '<span class="meeting-demo">Archive preview</span>' : `<a class="meeting-button" href="${root}meetings/${m.id}/">View briefing <span aria-hidden="true">→</span></a>`}</article>`;
+  const action = m => m.briefingPath ? `<a class="meeting-button" href="${root}meetings/${m.briefingPath}">View briefing <span aria-hidden="true">→</span></a>` : '';
+  const card = m => `<article class="meeting-card${m.isFeatured ? ' meeting-card--featured' : ''}">${m.isFeatured ? '<span class="meeting-new">New</span>' : ''}${date(m)}<div class="meeting-card__body"><p class="meeting-association">${esc(m.association)}</p><h3>${esc(m.title)}</h3><p>${esc(m.description)}</p>${stats(m)}${m.isFeatured ? `<div class="meeting-chips">${m.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>` : ''}</div>${action(m)}</article>`;
   const landing = document.querySelector('[data-meetings-landing]');
   if (landing) {
     const featured = meetings.find(m => m.isFeatured); const archive = meetings.filter(m => !m.isFeatured);
