@@ -213,3 +213,78 @@ if (tickerViewport && tickerTrack && previousScoreButton && nextScoreButton) {
   window.addEventListener('resize', updateTickerState);
   updateTickerState();
 }
+
+// Local-only quiz hub prototype data and interactions. Replace with reviewed quiz service data when available.
+const quizzesApp = document.querySelector('[data-quizzes-app]');
+if (quizzesApp) {
+  const topicData = [
+    { name: 'Definitions', questions: 24, completed: 24, accuracy: 83 },
+    { name: 'The Game, Field and Equipment', questions: 31, completed: 14, accuracy: 79 },
+    { name: 'Players, Substitutes and Equipment', questions: 28, completed: 8, accuracy: 75 },
+    { name: 'Periods, Time Factors and Substitutions', questions: 36, completed: 19, accuracy: 72 },
+    { name: 'Kicking the Ball and Fair Catch', questions: 34, completed: 34, accuracy: 86 },
+    { name: 'Passing the Ball', questions: 38, completed: 20, accuracy: 74 },
+    { name: 'Scoring Plays and Touchbacks', questions: 29, completed: 29, accuracy: 89 },
+    { name: 'Player Conduct', questions: 26, completed: 11, accuracy: 77 },
+    { name: 'Penalty Enforcement', questions: 42, completed: 26, accuracy: 68 },
+    { name: 'Officials and Mechanics', questions: 33, completed: 0, accuracy: 0 }
+  ];
+  const topicGrid = quizzesApp.querySelector('[data-topic-grid]');
+  const toast = quizzesApp.querySelector('[data-quiz-toast]');
+  let activeTopicFilter = 'all';
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.hidden = false;
+    window.setTimeout(() => { toast.hidden = true; }, 4500);
+  }
+
+  function matchesTopicFilter(topic) {
+    if (activeTopicFilter === 'progress') return topic.completed > 0 && topic.completed < topic.questions;
+    if (activeTopicFilter === 'needs-work') return topic.accuracy > 0 && topic.accuracy < 75;
+    if (activeTopicFilter === 'completed') return topic.completed === topic.questions;
+    return true;
+  }
+
+  function renderTopics() {
+    const topics = topicData.filter(matchesTopicFilter);
+    topicGrid.innerHTML = topics.map((topic) => {
+      const progress = Math.round((topic.completed / topic.questions) * 100);
+      const action = topic.completed ? 'Continue Practice' : 'Practice';
+      return `<article class="topic-card"><div><h3>${topic.name}</h3><div class="topic-card__meta"><span>${topic.questions} questions</span><span>${topic.completed} completed</span></div></div><div><div class="progress-track" aria-label="${progress}% complete"><span style="width:${progress}%"></span></div><div class="topic-card__meta"><span>${progress}% complete</span><span>${topic.accuracy ? `${topic.accuracy}% accuracy` : 'Not started'}</span></div></div><button type="button" data-topic-launch="${topic.name}">${action}</button></article>`;
+    }).join('') || '<p class="quiz-toast">No topics match this filter yet. Try another view.</p>';
+  }
+
+  quizzesApp.querySelectorAll('[data-topic-filter]').forEach((button) => {
+    button.addEventListener('click', () => {
+      activeTopicFilter = button.dataset.topicFilter;
+      quizzesApp.querySelectorAll('[data-topic-filter]').forEach((item) => item.classList.toggle('is-active', item === button));
+      renderTopics();
+    });
+  });
+  quizzesApp.addEventListener('click', (event) => {
+    const launch = event.target.closest('[data-quiz-launch], [data-topic-launch]');
+    if (launch) showToast(`${launch.dataset.quizLaunch || launch.dataset.topicLaunch} is queued for the quiz experience coming next.`);
+  });
+  renderTopics();
+
+  const scenarioForm = quizzesApp.querySelector('[data-scenario-form]');
+  const scenarioResult = quizzesApp.querySelector('[data-scenario-result]');
+  scenarioForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const selected = scenarioForm.querySelector('input[name="ruling"]:checked');
+    if (!selected) {
+      scenarioResult.hidden = false;
+      scenarioResult.innerHTML = '<strong>Select a ruling first.</strong> Choose the call you would make, then check your ruling.';
+      return;
+    }
+    scenarioForm.querySelectorAll('label').forEach((label) => {
+      const input = label.querySelector('input');
+      label.classList.toggle('is-correct', input.value === 'b');
+      label.classList.toggle('is-incorrect', input.checked && input.value !== 'b');
+    });
+    const correct = selected.value === 'b';
+    scenarioResult.hidden = false;
+    scenarioResult.innerHTML = `<strong>${correct ? 'Correct call.' : 'Review the enforcement.'}</strong> Intentional grounding applies. The penalty is enforced from the spot of the pass, with loss of down. <b>NFHS 7-5-2d</b> · <a href="rules.html">View Full Explanation</a>`;
+  });
+}
