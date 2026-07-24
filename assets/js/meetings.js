@@ -18,7 +18,25 @@
   }[title] || title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''));
   const needIcons = ['◷','◉','▤','◌','▱','♩'];
   const needLabels = ['Monday meetings','Zoom meetings','CIF registration','Rules test','Arbiter profile','Uniforms, scrimmages & Thursdays'];
-  const section = s => {
+  const sectionSummaries = {
+    'Need to know':'Meeting schedule, Zoom link, uniforms, scrimmages, and other admin notes.',
+    'Important dates':'Key dates, preseason activity, and assignment reminders.',
+    '2026 rule changes':'Play cards on belts, head slap prohibition, and other rule changes.',
+    'Official jurisdiction & postgame':'Postgame jurisdiction, conduct, and reporting responsibilities.',
+    'Disqualified players':'Disqualified players, postgame jurisdiction, reporting procedures, and documentation.',
+    'Personal foul / flagrant / unsportsmanlike':'How the meeting distinguished personal, flagrant, and unsportsmanlike fouls.',
+    'Punching / stripping the ball':'Guidance on legal attempts to dislodge the football and illegal contact.',
+    'Aiding the runner':'Recognizing illegal assistance to a runner.',
+    'Control the sideline':'Preventive communication, warnings, and sideline enforcement.',
+    'Pop-up kicks':'Safety emphasis and immediate dead-ball procedure.',
+    'Equipment & uniforms':'Required equipment, uniforms, and player-worn devices.',
+    'Arbiter & CIF':'CIF requirements, fees, eligibility, and Arbiter best practices.',
+    'New officials: get reps':'Scrimmage opportunities and practical development advice.',
+    'Game fees':'Approximate compensation discussed for each game level.',
+    'Association / school coverage':'School coverage, regional opportunities, and alignment information.'
+  };
+  const noteIcons = ['▤','▦','♧','▧','⚑','⚖','◉','↗','▥','◒','▣','▦','★','¤','◎'];
+  const section = (s, index) => {
     const list = items => `<ul class="briefing-list">${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
     let body='';
     if (s.type === 'need') body=`<div class="need-rows">${s.items.map((x,i)=>`<div class="need-row"><span aria-hidden="true">${needIcons[i]}</span><div><b>${needLabels[i]}</b><p>${esc(x)}</p></div></div>`).join('')}</div>`;
@@ -28,7 +46,8 @@
     if (s.type === 'discussion') body=`<div class="briefing-discussion"><p>${esc(s.text)}</p></div>`;
     if (s.type === 'fees') body=`<div class="fees-wrap"><p class="meeting-label">Meeting discussion — approximate</p><table><thead><tr><th>Level</th><th>Approx. fee</th></tr></thead><tbody>${s.items.map(([x,y])=>`<tr><th scope="row">${esc(x)}</th><td>${esc(y)}</td></tr>`).join('')}</tbody></table></div>`;
     const modifier = s.title === 'Personal foul / flagrant / unsportsmanlike' ? ' briefing-section--comparison' : s.title === 'Equipment & uniforms' ? ' briefing-section--equipment' : '';
-    return `<section id="${sectionId(s.title)}" class="briefing-section${s.featured ? ' briefing-section--featured' : ''}${modifier}">${badge(s.label)}<h2>${esc(s.title)}</h2>${body}${s.note ? `<aside class="briefing-note">${s.noteLabel ? `<b>${esc(s.noteLabel)}</b>` : ''}<p>${esc(s.note)}</p></aside>` : ''}</section>`;
+    const id = sectionId(s.title);
+    return `<section id="${id}" class="briefing-section${s.featured ? ' briefing-section--featured' : ''}${modifier}"><button class="briefing-section__toggle" type="button" aria-expanded="false" aria-controls="${id}-content"><span class="briefing-section__number">${String(index + 1).padStart(2, '0')}</span><span class="briefing-section__icon" aria-hidden="true">${noteIcons[index % noteIcons.length]}</span><span class="briefing-section__summary"><b>${esc(s.title)}</b><span>${esc(sectionSummaries[s.title] || 'Meeting notes and officiating guidance.')}</span></span><span class="briefing-section__chevron" aria-hidden="true">›</span></button><div id="${id}-content" class="briefing-section__content">${badge(s.label)}<h2>${esc(s.title)}</h2>${body}${s.note ? `<aside class="briefing-note">${s.noteLabel ? `<b>${esc(s.noteLabel)}</b>` : ''}<p>${esc(s.note)}</p></aside>` : ''}</div></section>`;
   };
   const detail = document.querySelector('[data-meeting-detail]');
   if (detail) {
@@ -37,7 +56,28 @@
     const nav = [['need-to-know','Need to Know'],['important-dates','Important Dates'],['rule-changes','Rule Changes'],['postgame-jurisdiction','Postgame & Jurisdiction'],['disqualifications','Disqualifications'],['personal-flagrant-uns','Personal / Flagrant / UNS'],['punching-ball','Punching the Ball'],['aiding-runner','Aiding the Runner'],['sideline-management','Sideline Management'],['pop-up-kicks','Pop-Up Kicks'],['equipment','Equipment'],['cif-arbiter','CIF & Arbiter'],['new-officials','New Officials'],['game-fees','Game Fees'],['association-coverage','Association Coverage'],['original-source','Original Source']];
     const prioritized = ['Need to know','Important dates','2026 rule changes','Arbiter & CIF'];
     const orderedSections = [...prioritized.map(title => m.sections.find(s => s.title === title)), ...m.sections.filter(s => !prioritized.includes(s.title))];
-    detail.innerHTML = `<section class="briefing-head"><div class="shell"><article class="briefing-hero"><a href="${root}meetings/" class="briefing-back">← Back to Meeting Briefings</a><p>${esc(m.association)} • ${esc(m.date)}</p><h1>${esc(m.title)}</h1><div class="briefing-hero__bottom"><div><span>2026 rules, equipment, mechanics, administration, and season preparation.</span><ul class="meeting-stats"><li>${m.topicCount} Topics</li><li>${m.actionItemCount} Action Items</li><li>${m.duration}</li><li>${m.season} Season</li></ul></div><div class="meeting-chips">${m.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div></article></div></section><div class="briefing-mobile-nav shell"><label>In this briefing<select>${nav.map(([id,label])=>`<option value="#${id}">${label}</option>`).join('')}</select></label></div><div class="briefing-layout shell"><article class="briefing-content">${orderedSections.map(section).join('')}<section id="original-source" class="source-card"><p class="meeting-label">Original meeting source</p><h2>Continue with the source</h2><div><button disabled>Listen to recording <small>Coming soon</small></button><button disabled>View transcript <small>Coming soon</small></button></div><p>This briefing summarizes information discussed during the meeting. Official NFHS rules, CIF policy, section directives, and current CSOA communication supersede informal meeting discussion.</p></section></article><aside class="briefing-sidebar"><nav aria-label="In this briefing"><p>In this briefing</p><ol>${nav.map(([id,label])=>`<li><a href="#${id}">${label}</a></li>`).join('')}</ol></nav></aside></div>`;
+    detail.innerHTML = `<section class="briefing-head"><div class="shell"><article class="briefing-hero"><a href="${root}meetings/" class="briefing-back">← Back to Meeting Briefings</a><p>${esc(m.association)} • ${esc(m.date)}</p><h1><span class="briefing-hero__title-desktop">${esc(m.title)}</span><span class="briefing-hero__title-mobile">July 20 Meeting Brief</span></h1><div class="briefing-hero__bottom"><div><span class="briefing-hero__lede"><span class="briefing-hero__lede-desktop">2026 rules, equipment, mechanics, administration, and season preparation.</span><span class="briefing-hero__lede-mobile">${esc(m.date)} <i aria-hidden="true">•</i> 6:30–8:00 PM <i aria-hidden="true">•</i> ${esc(m.duration)}</span></span><ul class="meeting-stats"><li>${m.topicCount} Topics</li><li>${m.actionItemCount} Action Items</li><li>${m.duration}</li><li>${m.season} Season</li></ul></div><div class="meeting-chips">${m.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div></article></div></section><div class="briefing-mobile-nav shell"><label>In this briefing<select>${nav.map(([id,label])=>`<option value="#${id}">${label}</option>`).join('')}</select></label></div><div class="briefing-layout shell"><article class="briefing-content">${orderedSections.map((s, index) => section(s, index)).join('')}<section id="original-source" class="source-card"><p class="meeting-label">Original meeting source</p><h2>Continue with the source</h2><div><button disabled>Listen to recording <small>Coming soon</small></button><button disabled>View transcript <small>Coming soon</small></button></div><p>This briefing summarizes information discussed during the meeting. Official NFHS rules, CIF policy, section directives, and current CSOA communication supersede informal meeting discussion.</p></section></article><aside class="briefing-sidebar"><nav aria-label="In this briefing"><p>In this briefing</p><ol>${nav.map(([id,label])=>`<li><a href="#${id}">${label}</a></li>`).join('')}</ol></nav></aside></div>`;
     detail.querySelector('.briefing-mobile-nav select').addEventListener('change', event => { location.hash = event.target.value; });
+    detail.querySelectorAll('.briefing-section__toggle').forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const section = toggle.closest('.briefing-section');
+        const willOpen = toggle.getAttribute('aria-expanded') !== 'true';
+        detail.querySelectorAll('.briefing-section__toggle[aria-expanded="true"]').forEach((openToggle) => {
+          openToggle.setAttribute('aria-expanded', 'false');
+          openToggle.closest('.briefing-section').classList.remove('is-open');
+        });
+        toggle.setAttribute('aria-expanded', String(willOpen));
+        section.classList.toggle('is-open', willOpen);
+      });
+    });
+    const quickAccess = document.createElement('section');
+    quickAccess.className = 'briefing-quick-access shell';
+    quickAccess.setAttribute('aria-label', 'Quick access');
+    quickAccess.innerHTML = `<a href="#need-to-know"><span class="briefing-quick-access__icon" aria-hidden="true">◖</span><span><b>Quick brief</b><small>Preseason info, rule changes, equipment reminders, sideline management, and important dates.</small></span><i aria-hidden="true">›</i></a><a href="#cif-arbiter"><span class="briefing-quick-access__icon" aria-hidden="true">✓</span><span><b>Action items</b><small>${m.actionItemCount} important items officials need to complete or be aware of.</small></span><i aria-hidden="true">›</i></a><a href="#important-dates"><span class="briefing-quick-access__icon" aria-hidden="true">▣</span><span><b>Dates &amp; deadlines</b><small>Key dates discussed at the meeting.</small></span><i aria-hidden="true">›</i></a>`;
+    detail.querySelector('.briefing-head').after(quickAccess);
+    const bottomNav = document.createElement('nav');
+    bottomNav.className = 'meeting-bottom-nav'; bottomNav.setAttribute('aria-label', 'Mobile navigation');
+    bottomNav.innerHTML = `<a href="${root}index.html"><span aria-hidden="true">⌂</span>Home</a><a href="${root}pages/scores.html"><span aria-hidden="true">▣</span>Scores</a><a href="${root}pages/rankings.html"><span aria-hidden="true">♜</span>Standings</a><a class="is-active" href="${root}meetings/" aria-current="page"><span aria-hidden="true">▤</span>Meetings</a><a href="#main-content"><span aria-hidden="true">•••</span>More</a>`;
+    document.body.append(bottomNav);
   }
 })();
