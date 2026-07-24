@@ -324,3 +324,33 @@ body{background:var(--canvas);color:var(--slate);font-family:var(--sans);line-he
   .meeting-briefing-page .briefing-back{position:static;display:block;margin:0 16px .8rem;color:#a51f27}
   .meeting-briefing-page .briefing-main::before{display:block;content:'Meeting notes';margin:0;padding:0 0 12px;color:var(--navy);font-family:var(--display);font-size:1.45rem;font-weight:900;letter-spacing:.015em;text-transform:uppercase}
 }
+
+/* Reusable Quick Brief article: authored meeting recap content. */
+.quick-brief-article{scroll-margin-top:1rem;margin-bottom:1rem;padding:clamp(1.4rem,3vw,2.6rem);border:1px solid #dbe3eb;border-top:5px solid var(--red);border-radius:6px;background:#fff;box-shadow:0 4px 16px rgba(6,25,46,.08)}
+.quick-brief-article__header{max-width:52rem;padding-bottom:1.35rem;border-bottom:1px solid var(--line)}
+.quick-brief-article h2{max-width:20ch;margin:.35rem 0 .7rem;color:var(--navy);font-family:var(--display);font-size:clamp(2rem,4.2vw,3.5rem);letter-spacing:.01em;line-height:.98;text-transform:uppercase}
+.quick-brief-article__deck{max-width:48rem;margin:0;color:#29425e;font-size:clamp(1rem,1.8vw,1.22rem);font-weight:700;line-height:1.45}
+.quick-brief-article__meta{margin:.8rem 0 0;color:#64758a;font-size:.78rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.quick-brief-article__section{max-width:46rem;margin:0 auto;padding-top:1.6rem}
+.quick-brief-article__section h3{margin:0 0 .55rem;color:var(--navy);font-family:var(--display);font-size:clamp(1.3rem,2.4vw,1.8rem);letter-spacing:.015em;text-transform:uppercase}
+.quick-brief-article__section p{margin:.75rem 0 0;color:#243a52;font-size:1rem;line-height:1.7}
+.quick-brief-article__section p:first-of-type{margin-top:0}
+.quick-brief-article__section a{color:#0756d8;font-weight:800;text-decoration-thickness:1px;text-underline-offset:3px}
+.quick-brief-article__footer{max-width:46rem;margin:2rem auto 0;padding-top:1.3rem;border-top:1px solid var(--line)}
+.quick-brief-article__footer a{display:inline-flex;min-height:44px;align-items:center;color:#0756d8;font-size:.82rem;font-weight:900;letter-spacing:.03em;text-decoration:none;text-transform:uppercase}
+.quick-brief-article__footer a:hover{text-decoration:underline;text-underline-offset:4px}
+@media (max-width:799px){
+  .quick-brief-article{margin:0 0 18px;padding:22px 16px;border-radius:11px;scroll-margin-top:78px}
+  .quick-brief-article h2{max-width:14ch;font-size:clamp(2rem,9vw,2.65rem)}
+  .quick-brief-article__deck{font-size:1rem;line-height:1.5}
+  .quick-brief-article__section{padding-top:1.45rem}
+  .quick-brief-article__section h3{font-size:1.35rem}
+  .quick-brief-article__section p{font-size:.98rem;line-height:1.68}
+  .quick-brief-article__footer{margin-top:1.7rem}
+}
+@media (max-width:799px){
+  .meeting-briefing-page .briefing-main::before{display:none;content:none}
+  .meeting-briefing-page .briefing-notes>header{display:flex;padding:0 0 12px}
+  .meeting-briefing-page .briefing-notes>header h2{margin:0;color:var(--navy);font-family:var(--display);font-size:1.45rem;font-weight:900;letter-spacing:.015em;text-transform:uppercase}
+  .meeting-briefing-page .briefing-notes>header a{display:none}
+}
