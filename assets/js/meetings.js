@@ -59,13 +59,24 @@
     'Association / school coverage':'School coverage, regional opportunities, and alignment information.'
   };
   const noteIcons = ['▤','▦','♧','▧','⚑','⚖','◉','↗','▥','◒','▣','▦','★','¤','◎'];
+
+  const normalizeRuleCard = (item) => Array.isArray(item)
+    ? { title: item[0], summary: item[1] }
+    : item;
+  const cardDetails = (item, sectionIdValue, index) => {
+    const card = normalizeRuleCard(item);
+    const details = [card.ruleReference, card.plainEnglish, card.meetingTakeaway, card.sourceUrl].some(value => value);
+    const detailsId = `${sectionIdValue}-rule-details-${index}`;
+    const source = card.sourceUrl ? `<div class="rule-detail__group"><h5>Official source</h5><p><a class="briefing-external-link" href="${esc(card.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(card.sourceLabel || card.sourceUrl)}</a></p></div>` : '';
+    return `<article class="${details ? 'rule-card' : ''}"><h3>${linkReferences(card.title)}</h3><p>${linkReferences(card.summary)}</p>${details ? `<div id="${detailsId}" class="rule-detail" hidden><h4>Rule details</h4><div class="rule-detail__group"><h5>Rule reference</h5><p>${linkReferences(card.ruleReference || 'Reference pending verification')}</p></div>${card.plainEnglish ? `<div class="rule-detail__group"><h5>What it means</h5><p>${linkReferences(card.plainEnglish)}</p></div>` : ''}${card.meetingTakeaway ? `<div class="rule-detail__group"><h5>From the CSOA meeting</h5><p>${linkReferences(card.meetingTakeaway)}</p></div>` : ''}${source}</div><button class="rule-card__toggle" type="button" aria-expanded="false" aria-controls="${detailsId}" data-rule-detail-toggle><span>More</span> <span aria-hidden="true">↓</span></button>` : ''}</article>`;
+  };
   const section = (s, index) => {
     const list = items => `<ul class="briefing-list">${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
     let body='';
     if (s.type === 'need') body=`<div class="need-rows">${s.items.map((x,i)=>`<div class="need-row"><span aria-hidden="true">${needIcons[i]}</span><div><b>${needLabels[i] === 'CIF registration' ? externalLink(needLabels[i], cifRegistrationUrl) : linkReferences(needLabels[i])}</b><p>${linkReferences(x)}</p></div></div>`).join('')}</div>`;
     if (s.type === 'list') body=list(s.items);
     if (s.type === 'dates') body=`<div class="date-notes">${s.items.map(([when,text])=>`<div><b>${esc(when)}</b><span>${esc(text)}</span></div>`).join('')}</div>`;
-    if (s.type === 'cards') body=`<div class="briefing-cards">${s.items.map(([title,text])=>`<article><h3>${linkReferences(title)}</h3><p>${linkReferences(text)}</p></article>`).join('')}</div>`;
+    if (s.type === 'cards') body=`<div class="briefing-cards">${s.items.map((item, itemIndex)=>cardDetails(item, sectionId(s.title), itemIndex)).join('')}</div>`;
     if (s.type === 'discussion') body=`<div class="briefing-discussion"><p>${esc(s.text)}</p></div>`;
     if (s.type === 'fees') body=`<div class="fees-wrap"><p class="meeting-label">Meeting discussion — approximate</p><table><thead><tr><th>Level</th><th>Approx. fee</th></tr></thead><tbody>${s.items.map(([x,y])=>`<tr><th scope="row">${esc(x)}</th><td>${esc(y)}</td></tr>`).join('')}</tbody></table></div>`;
     const modifier = s.title === 'Personal foul / flagrant / unsportsmanlike' ? ' briefing-section--comparison' : s.title === 'Equipment & uniforms' ? ' briefing-section--equipment' : '';
@@ -88,6 +99,16 @@
     const navLinks = navigation.map(({id,label,index}) => /\bArbiter\b/i.test(label) ? `<li><a class="briefing-external-link" href="${arbiterUrl}" target="_blank" rel="noopener noreferrer"><b>${String(index + 1).padStart(2, '0')}</b><span>${esc(label)}</span></a></li>` : `<li><a href="#${id}"><b>${String(index + 1).padStart(2, '0')}</b><span>${esc(label)}</span></a></li>`).join('');
     detail.innerHTML = `<section class="briefing-head"><div class="shell"><a href="${root}meetings/" class="briefing-back">← Back to Meeting Briefings</a><article class="briefing-hero"><p>${esc(m.association)}</p><h1><span class="briefing-hero__title-desktop">${esc(m.briefTitle || m.title)}</span><span class="briefing-hero__title-mobile">${esc(m.briefTitle || m.title)}</span></h1><div class="briefing-hero__meta"><span>▣ ${esc(m.date)}</span><i>•</i><span>◷ ${esc(m.time || '6:30 – 8:00 PM')}</span><i>•</i><span>◷ ${esc(m.duration)}</span></div><div class="briefing-hero__bottom"><ul class="meeting-stats"><li><b>${esc(m.topicCount)}</b><span>Topics</span></li><li><b>${esc(m.actionItemCount)}</b><span>Action items</span></li><li><b>${esc(m.duration.replace(/\D/g, ''))}</b><span>Minutes</span></li><li><b>${esc(m.season)}</b><span>Season</span></li></ul><div class="meeting-chips">${m.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div></article></div></section><div class="briefing-mobile-nav shell"><label>In this briefing<select>${navigation.map(({id,label})=>`<option value="#${id}">${esc(label)}</option>`).join('')}</select></label></div><div class="briefing-layout shell"><main class="briefing-main">${summaryCards}<article id="meeting-notes" class="briefing-notes"><header><h2>Meeting notes</h2><a href="#meeting-notes">View all topics <span aria-hidden="true">→</span></a></header>${orderedSections.map((s, index) => section(s, index)).join('')}</article></main><aside class="briefing-sidebar"><nav aria-label="In this briefing"><p>In this briefing</p><ol>${navLinks}</ol></nav></aside></div>`;
 
+    detail.querySelectorAll('[data-rule-detail-toggle]').forEach((toggle) => {
+      const panel = document.getElementById(toggle.getAttribute('aria-controls'));
+      if (!panel) return;
+      toggle.addEventListener('click', () => {
+        const shouldOpen = toggle.getAttribute('aria-expanded') !== 'true';
+        toggle.setAttribute('aria-expanded', String(shouldOpen));
+        panel.hidden = !shouldOpen;
+        toggle.innerHTML = `<span>${shouldOpen ? 'Less' : 'More'}</span> <span aria-hidden="true">${shouldOpen ? '↑' : '↓'}</span>`;
+      });
+    });
     detail.querySelectorAll('[data-action-checklist]').forEach((list) => {
       const storageKey = list.dataset.storageKey;
       let saved = {};
