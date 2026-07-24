@@ -16,6 +16,16 @@
       return match;
     });
   };
+
+  const actionChecklist = (m) => {
+    const items = m.actionItems || [];
+    if (!items.length) return '<p class="briefing-summary__empty">No action items were recorded for this meeting.</p>';
+    const storageKey = `meeting-${esc(m.id)}-action-items`;
+    return `<ul class="action-checklist" data-action-checklist data-storage-key="${storageKey}">${items.map((item, index) => {
+      const inputId = `action-item-${esc(m.id)}-${index}`;
+      return `<li class="action-checklist__item"><input class="action-checklist__checkbox" type="checkbox" id="${inputId}" data-action-index="${index}"><label class="action-checklist__label" for="${inputId}">${linkReferences(item)}</label></li>`;
+    }).join('')}</ul>`;
+  };
   const badge = (label) => label ? `<p class="meeting-label">${esc(label)}</p>` : '';
   const stats = (m) => `<ul class="meeting-stats"><li>${m.topicCount} Topics</li>${m.actionItemCount ? `<li>${m.actionItemCount} Action Items</li>` : ''}<li>${m.duration}</li></ul>`;
   const date = m => `<div class="meeting-date"><b>${m.month}</b><strong>${m.day}</strong><span>${m.year}</span></div>`;
@@ -72,11 +82,24 @@
     const quickBriefPath = 'quick-brief.html';
     const summaryCards = `<section class="briefing-summary" aria-label="Meeting highlights">
       <article class="briefing-summary__card"><span class="briefing-summary__icon" aria-hidden="true">◖</span><div><h2>Quick brief</h2><p>${esc(m.quickBrief || m.description)}</p></div><a href="${quickBriefPath}">Read Quick Brief <span aria-hidden="true">→</span></a></article>
-      <article id="action-items" class="briefing-summary__card"><span class="briefing-summary__icon" aria-hidden="true">✓</span><div><h2>Action items</h2><ul>${(m.actionItems || []).map(item => `<li>${linkReferences(item)}</li>`).join('')}</ul></div><a href="#cif-arbiter">View all action items <span aria-hidden="true">→</span></a></article>
+      <article id="action-items" class="briefing-summary__card briefing-summary__card--action-items"><span class="briefing-summary__icon" aria-hidden="true">✓</span><div><h2>Action items</h2>${actionChecklist(m)}</div></article>
       <article id="dates-deadlines" class="briefing-summary__card"><span class="briefing-summary__icon" aria-hidden="true">▣</span><div><h2>Dates &amp; deadlines</h2><dl>${summaries.map(([when, text]) => `<div><dt>${esc(when)}</dt><dd>${esc(text)}</dd></div>`).join('')}</dl></div><a href="#important-dates" data-expand-section="important-dates">View all dates <span aria-hidden="true">→</span></a></article>
     </section>`;
     const navLinks = navigation.map(({id,label,index}) => /\bArbiter\b/i.test(label) ? `<li><a class="briefing-external-link" href="${arbiterUrl}" target="_blank" rel="noopener noreferrer"><b>${String(index + 1).padStart(2, '0')}</b><span>${esc(label)}</span></a></li>` : `<li><a href="#${id}"><b>${String(index + 1).padStart(2, '0')}</b><span>${esc(label)}</span></a></li>`).join('');
     detail.innerHTML = `<section class="briefing-head"><div class="shell"><a href="${root}meetings/" class="briefing-back">← Back to Meeting Briefings</a><article class="briefing-hero"><p>${esc(m.association)}</p><h1><span class="briefing-hero__title-desktop">${esc(m.briefTitle || m.title)}</span><span class="briefing-hero__title-mobile">${esc(m.briefTitle || m.title)}</span></h1><div class="briefing-hero__meta"><span>▣ ${esc(m.date)}</span><i>•</i><span>◷ ${esc(m.time || '6:30 – 8:00 PM')}</span><i>•</i><span>◷ ${esc(m.duration)}</span></div><div class="briefing-hero__bottom"><ul class="meeting-stats"><li><b>${esc(m.topicCount)}</b><span>Topics</span></li><li><b>${esc(m.actionItemCount)}</b><span>Action items</span></li><li><b>${esc(m.duration.replace(/\D/g, ''))}</b><span>Minutes</span></li><li><b>${esc(m.season)}</b><span>Season</span></li></ul><div class="meeting-chips">${m.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div></article></div></section><div class="briefing-mobile-nav shell"><label>In this briefing<select>${navigation.map(({id,label})=>`<option value="#${id}">${esc(label)}</option>`).join('')}</select></label></div><div class="briefing-layout shell"><main class="briefing-main">${summaryCards}<article id="meeting-notes" class="briefing-notes"><header><h2>Meeting notes</h2><a href="#meeting-notes">View all topics <span aria-hidden="true">→</span></a></header>${orderedSections.map((s, index) => section(s, index)).join('')}</article></main><aside class="briefing-sidebar"><nav aria-label="In this briefing"><p>In this briefing</p><ol>${navLinks}</ol></nav></aside></div>`;
+
+    detail.querySelectorAll('[data-action-checklist]').forEach((list) => {
+      const storageKey = list.dataset.storageKey;
+      let saved = {};
+      try { saved = JSON.parse(localStorage.getItem(storageKey) || '{}') || {}; } catch (error) { saved = {}; }
+      list.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+        checkbox.checked = Boolean(saved[checkbox.dataset.actionIndex]);
+        checkbox.addEventListener('change', () => {
+          saved[checkbox.dataset.actionIndex] = checkbox.checked;
+          try { localStorage.setItem(storageKey, JSON.stringify(saved)); } catch (error) { /* localStorage may be unavailable. */ }
+        });
+      });
+    });
     detail.querySelector('.briefing-mobile-nav select').addEventListener('change', event => { location.hash = event.target.value; });
     const setSectionOpen = (section, shouldOpen) => {
       const toggle = section.querySelector('.briefing-section__toggle');

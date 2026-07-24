@@ -257,6 +257,18 @@ body{background:var(--canvas);color:var(--slate);font-family:var(--sans);line-he
   .site-nav a{padding:.75rem 0!important;border-bottom:1px solid rgba(255,255,255,.1)!important;font-size:1rem}
 }
 
+
+/* Meeting action items render as a reusable, persistent checklist. */
+.action-checklist{display:grid;gap:.55rem;margin:0;padding:0;list-style:none}
+.action-checklist__item{display:grid;grid-template-columns:18px minmax(0,1fr);gap:.6rem;align-items:start;min-width:0}
+.action-checklist__checkbox{appearance:none;display:grid;width:18px;height:18px;margin:.08rem 0 0;place-content:center;border:2px solid #526477;border-radius:4px;background:#fff;cursor:pointer;flex:0 0 auto}
+.action-checklist__checkbox::before{content:'';width:9px;height:5px;border:solid #06192e;border-width:0 0 2px 2px;opacity:0;transform:rotate(-45deg) scale(.8)}
+.action-checklist__checkbox:checked::before{opacity:1}
+.action-checklist__checkbox:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.action-checklist__label{min-width:0;color:var(--navy);font-size:.78rem;line-height:1.45;transition:color .18s ease,text-decoration-color .18s ease}
+.action-checklist__checkbox:checked + .action-checklist__label{color:#6b7b8d;text-decoration:line-through;text-decoration-thickness:1px;text-decoration-color:#9aa8b6}
+.briefing-summary__empty{margin:0;color:#526477;font-size:.78rem;line-height:1.5}
+
 /* July 20 briefing: app-like controls only activate at phone widths. */
 .briefing-hero__title-mobile,.briefing-hero__lede-mobile,.briefing-quick-access,.meeting-bottom-nav,.briefing-section__toggle{display:none}
 @media (max-width:768px){
@@ -369,3 +381,23 @@ body{background:var(--canvas);color:var(--slate);font-family:var(--sans);line-he
 .quick-brief-article--standalone .quick-brief-article__section h2{margin:0 0 .65rem;color:var(--navy);font-family:var(--display);font-size:clamp(1.4rem,2.5vw,1.95rem);letter-spacing:.015em;line-height:1;text-transform:uppercase}
 .quick-brief-article--standalone .quick-brief-article__section p{font-size:clamp(1rem,1.25vw,1.1rem);line-height:1.78}
 @media (max-width:699px){.quick-brief-page__inner{width:calc(100% - 2rem);padding:1.25rem 0 3rem}.quick-brief-page__back{margin-bottom:.75rem}.quick-brief-article--standalone{padding:1.4rem 1.1rem;border-top-width:6px}.quick-brief-article--standalone .quick-brief-article__header{padding-bottom:1.35rem}.quick-brief-article--standalone h1{max-width:15ch;font-size:clamp(2.25rem,11vw,3.25rem);line-height:.94}.quick-brief-article--standalone .quick-brief-article__section{padding-top:1.7rem}.quick-brief-article--standalone .quick-brief-article__section p{font-size:1rem;line-height:1.72}}
+
+@media (max-width:799px){
+  .meeting-briefing-page .briefing-summary{display:grid;gap:14px;margin:0 0 18px}
+  .meeting-briefing-page .briefing-summary__card{display:none}
+  .meeting-briefing-page .briefing-summary__card--action-items{display:grid;min-height:0;grid-template-columns:48px minmax(0,1fr);gap:0 13px;padding:16px;border:1px solid #dfe5ec;border-radius:11px;background:#fff;box-shadow:0 4px 14px rgba(9,28,51,.08)}
+  .meeting-briefing-page .briefing-summary__card--action-items .briefing-summary__icon{width:48px;height:48px;border-radius:7px;font-size:24px}
+  .meeting-briefing-page .briefing-summary__card--action-items h2{margin:.15rem 0 .55rem;color:var(--navy);font-family:var(--display);font-size:1.1rem;letter-spacing:.02em;text-transform:uppercase}
+  .meeting-briefing-page .action-checklist{gap:0}
+  .meeting-briefing-page .action-checklist__item{grid-template-columns:18px minmax(0,1fr);gap:10px;align-items:center;min-height:44px;padding:4px 0}
+  .meeting-briefing-page .action-checklist__checkbox{margin:0}
+  .meeting-briefing-page .action-checklist__label{font-size:.9rem;line-height:1.35}
+}
+
+@media (min-width:800px){
+  .briefing-summary{align-items:stretch}
+  .briefing-summary__card--action-items{grid-template-rows:1fr}
+  .briefing-summary__card--action-items .action-checklist{padding-left:0}
+  .briefing-summary__card--action-items .action-checklist__item{margin-bottom:0}
+  .briefing-summary__card--action-items .action-checklist__label a{grid-column:auto;font-size:inherit;font-weight:850}
+}
