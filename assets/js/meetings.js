@@ -63,20 +63,36 @@
     const summaryCards = `<section class="briefing-summary" aria-label="Meeting highlights">
       <article class="briefing-summary__card"><span class="briefing-summary__icon" aria-hidden="true">◖</span><div><h2>Quick brief</h2><p>${esc(m.quickBrief || m.description)}</p></div><a href="#meeting-notes">View full notes <span aria-hidden="true">→</span></a></article>
       <article id="action-items" class="briefing-summary__card"><span class="briefing-summary__icon" aria-hidden="true">✓</span><div><h2>Action items</h2><ul>${(m.actionItems || []).map(item => `<li>${linkArbiter(item)}</li>`).join('')}</ul></div><a href="#cif-arbiter">View all action items <span aria-hidden="true">→</span></a></article>
-      <article id="dates-deadlines" class="briefing-summary__card"><span class="briefing-summary__icon" aria-hidden="true">▣</span><div><h2>Dates &amp; deadlines</h2><dl>${summaries.map(([when, text]) => `<div><dt>${esc(when)}</dt><dd>${esc(text)}</dd></div>`).join('')}</dl></div><a href="#important-dates">View all dates <span aria-hidden="true">→</span></a></article>
+      <article id="dates-deadlines" class="briefing-summary__card"><span class="briefing-summary__icon" aria-hidden="true">▣</span><div><h2>Dates &amp; deadlines</h2><dl>${summaries.map(([when, text]) => `<div><dt>${esc(when)}</dt><dd>${esc(text)}</dd></div>`).join('')}</dl></div><a href="#important-dates" data-expand-section="important-dates">View all dates <span aria-hidden="true">→</span></a></article>
     </section>`;
     const navLinks = navigation.map(({id,label,index}) => /\bArbiter\b/i.test(label) ? `<li><a class="briefing-external-link" href="${arbiterUrl}" target="_blank" rel="noopener noreferrer"><b>${String(index + 1).padStart(2, '0')}</b><span>${esc(label)}</span></a></li>` : `<li><a href="#${id}"><b>${String(index + 1).padStart(2, '0')}</b><span>${esc(label)}</span></a></li>`).join('');
     detail.innerHTML = `<section class="briefing-head"><div class="shell"><a href="${root}meetings/" class="briefing-back">← Back to Meeting Briefings</a><article class="briefing-hero"><p>${esc(m.association)}</p><h1><span class="briefing-hero__title-desktop">${esc(m.briefTitle || m.title)}</span><span class="briefing-hero__title-mobile">${esc(m.briefTitle || m.title)}</span></h1><div class="briefing-hero__meta"><span>▣ ${esc(m.date)}</span><i>•</i><span>◷ ${esc(m.time || '6:30 – 8:00 PM')}</span><i>•</i><span>◷ ${esc(m.duration)}</span></div><div class="briefing-hero__bottom"><ul class="meeting-stats"><li><b>${esc(m.topicCount)}</b><span>Topics</span></li><li><b>${esc(m.actionItemCount)}</b><span>Action items</span></li><li><b>${esc(m.duration.replace(/\D/g, ''))}</b><span>Minutes</span></li><li><b>${esc(m.season)}</b><span>Season</span></li></ul><div class="meeting-chips">${m.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div></article></div></section><div class="briefing-mobile-nav shell"><label>In this briefing<select>${navigation.map(({id,label})=>`<option value="#${id}">${esc(label)}</option>`).join('')}</select></label></div><div class="briefing-layout shell"><main class="briefing-main">${summaryCards}<article id="meeting-notes" class="briefing-notes"><header><h2>Meeting notes</h2><a href="#meeting-notes">View all topics <span aria-hidden="true">→</span></a></header>${orderedSections.map((s, index) => section(s, index)).join('')}</article></main><aside class="briefing-sidebar"><nav aria-label="In this briefing"><p>In this briefing</p><ol>${navLinks}</ol></nav></aside></div>`;
     detail.querySelector('.briefing-mobile-nav select').addEventListener('change', event => { location.hash = event.target.value; });
+    const setSectionOpen = (section, shouldOpen) => {
+      const toggle = section.querySelector('.briefing-section__toggle');
+      section.classList.toggle('is-open', shouldOpen);
+      toggle.setAttribute('aria-expanded', String(shouldOpen));
+    };
+    const openSection = (section) => {
+      if (section.classList.contains('is-open')) return;
+      detail.querySelectorAll('.briefing-section.is-open').forEach(open => setSectionOpen(open, false));
+      setSectionOpen(section, true);
+    };
     detail.querySelectorAll('.briefing-section__toggle').forEach((toggle) => {
       toggle.addEventListener('click', () => {
         const current = toggle.closest('.briefing-section');
         const willOpen = toggle.getAttribute('aria-expanded') !== 'true';
-        detail.querySelectorAll('.briefing-section.is-open').forEach(open => {
-          open.classList.remove('is-open'); open.querySelector('.briefing-section__toggle').setAttribute('aria-expanded', 'false');
-        });
-        current.classList.toggle('is-open', willOpen);
-        toggle.setAttribute('aria-expanded', String(willOpen));
+        if (willOpen) openSection(current); else setSectionOpen(current, false);
+      });
+    });
+    detail.querySelectorAll('[data-expand-section]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        const section = detail.querySelector(`#${link.dataset.expandSection}`);
+        if (!section) return;
+        event.preventDefault();
+        openSection(section);
+        window.history.pushState(null, '', `#${section.id}`);
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
     const quickAccess = document.createElement('section');
