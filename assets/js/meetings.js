@@ -6,8 +6,16 @@
   const esc = (value) => String(value).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const arbiterUrl = 'https://www.arbitersports.com/sign-in';
   const cifRegistrationUrl = 'https://app.arbitersports.com/registration/official?org=9529&role=3';
-  const externalLink = (text, href) => `<a class="briefing-external-link" href="${href}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`;
-  const linkArbiter = (text) => esc(text).replace(/\bArbiter\b/gi, match => externalLink(match, arbiterUrl));
+  const csoaZoomUrl = 'https://us02web.zoom.us/j/5910609594?omn=84491354745';
+  const externalLink = (text, href) => `<a class="briefing-external-link${href === csoaZoomUrl ? ' briefing-zoom-link' : ''}" href="${href}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`;
+  const linkReferences = (text, { zoomLimit = Infinity } = {}) => {
+    let zoomLinks = 0;
+    return esc(text).replace(/\bArbiter\b|\bZoom(?:\s+(?:meeting|meetings|link|sessions?))?\b/gi, match => {
+      if (/^Arbiter$/i.test(match)) return externalLink(match, arbiterUrl);
+      if (zoomLinks++ < zoomLimit) return externalLink(match, csoaZoomUrl);
+      return match;
+    });
+  };
   const badge = (label) => label ? `<p class="meeting-label">${esc(label)}</p>` : '';
   const stats = (m) => `<ul class="meeting-stats"><li>${m.topicCount} Topics</li>${m.actionItemCount ? `<li>${m.actionItemCount} Action Items</li>` : ''}<li>${m.duration}</li></ul>`;
   const date = m => `<div class="meeting-date"><b>${m.month}</b><strong>${m.day}</strong><span>${m.year}</span></div>`;
@@ -44,15 +52,15 @@
   const section = (s, index) => {
     const list = items => `<ul class="briefing-list">${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
     let body='';
-    if (s.type === 'need') body=`<div class="need-rows">${s.items.map((x,i)=>`<div class="need-row"><span aria-hidden="true">${needIcons[i]}</span><div><b>${needLabels[i] === 'CIF registration' ? externalLink(needLabels[i], cifRegistrationUrl) : linkArbiter(needLabels[i])}</b><p>${linkArbiter(x)}</p></div></div>`).join('')}</div>`;
+    if (s.type === 'need') body=`<div class="need-rows">${s.items.map((x,i)=>`<div class="need-row"><span aria-hidden="true">${needIcons[i]}</span><div><b>${needLabels[i] === 'CIF registration' ? externalLink(needLabels[i], cifRegistrationUrl) : linkReferences(needLabels[i])}</b><p>${linkReferences(x)}</p></div></div>`).join('')}</div>`;
     if (s.type === 'list') body=list(s.items);
     if (s.type === 'dates') body=`<div class="date-notes">${s.items.map(([when,text])=>`<div><b>${esc(when)}</b><span>${esc(text)}</span></div>`).join('')}</div>`;
-    if (s.type === 'cards') body=`<div class="briefing-cards">${s.items.map(([title,text])=>`<article><h3>${linkArbiter(title)}</h3><p>${linkArbiter(text)}</p></article>`).join('')}</div>`;
+    if (s.type === 'cards') body=`<div class="briefing-cards">${s.items.map(([title,text])=>`<article><h3>${linkReferences(title)}</h3><p>${linkReferences(text)}</p></article>`).join('')}</div>`;
     if (s.type === 'discussion') body=`<div class="briefing-discussion"><p>${esc(s.text)}</p></div>`;
     if (s.type === 'fees') body=`<div class="fees-wrap"><p class="meeting-label">Meeting discussion — approximate</p><table><thead><tr><th>Level</th><th>Approx. fee</th></tr></thead><tbody>${s.items.map(([x,y])=>`<tr><th scope="row">${esc(x)}</th><td>${esc(y)}</td></tr>`).join('')}</tbody></table></div>`;
     const modifier = s.title === 'Personal foul / flagrant / unsportsmanlike' ? ' briefing-section--comparison' : s.title === 'Equipment & uniforms' ? ' briefing-section--equipment' : '';
     const id = sectionId(s.title);
-    return `<section id="${id}" class="briefing-section${s.featured ? ' briefing-section--featured' : ''}${modifier}"><button class="briefing-section__toggle" type="button" aria-expanded="false" aria-controls="${id}-content"><span class="briefing-section__number">${String(index + 1).padStart(2, '0')}</span><span class="briefing-section__icon" aria-hidden="true">${noteIcons[index % noteIcons.length]}</span><span class="briefing-section__summary"><b>${esc(s.title)}</b><span>${esc(sectionSummaries[s.title] || 'Meeting notes and officiating guidance.')}</span></span><span class="briefing-section__chevron" aria-hidden="true">›</span></button><div id="${id}-content" class="briefing-section__content">${badge(s.label)}<h2>${linkArbiter(s.title)}</h2>${body}${s.note ? `<aside class="briefing-note">${s.noteLabel ? `<b>${esc(s.noteLabel)}</b>` : ''}<p>${linkArbiter(s.note)}</p></aside>` : ''}</div></section>`;
+    return `<section id="${id}" class="briefing-section${s.featured ? ' briefing-section--featured' : ''}${modifier}"><button class="briefing-section__toggle" type="button" aria-expanded="false" aria-controls="${id}-content"><span class="briefing-section__number">${String(index + 1).padStart(2, '0')}</span><span class="briefing-section__icon" aria-hidden="true">${noteIcons[index % noteIcons.length]}</span><span class="briefing-section__summary"><b>${esc(s.title)}</b><span>${esc(sectionSummaries[s.title] || 'Meeting notes and officiating guidance.')}</span></span><span class="briefing-section__chevron" aria-hidden="true">›</span></button><div id="${id}-content" class="briefing-section__content">${badge(s.label)}<h2>${linkReferences(s.title)}</h2>${body}${s.note ? `<aside class="briefing-note">${s.noteLabel ? `<b>${esc(s.noteLabel)}</b>` : ''}<p>${linkReferences(s.note)}</p></aside>` : ''}</div></section>`;
   };
   const detail = document.querySelector('[data-meeting-detail]');
   if (detail) {
@@ -64,7 +72,7 @@
     const quickBriefPath = 'quick-brief.html';
     const summaryCards = `<section class="briefing-summary" aria-label="Meeting highlights">
       <article class="briefing-summary__card"><span class="briefing-summary__icon" aria-hidden="true">◖</span><div><h2>Quick brief</h2><p>${esc(m.quickBrief || m.description)}</p></div><a href="${quickBriefPath}">Read Quick Brief <span aria-hidden="true">→</span></a></article>
-      <article id="action-items" class="briefing-summary__card"><span class="briefing-summary__icon" aria-hidden="true">✓</span><div><h2>Action items</h2><ul>${(m.actionItems || []).map(item => `<li>${linkArbiter(item)}</li>`).join('')}</ul></div><a href="#cif-arbiter">View all action items <span aria-hidden="true">→</span></a></article>
+      <article id="action-items" class="briefing-summary__card"><span class="briefing-summary__icon" aria-hidden="true">✓</span><div><h2>Action items</h2><ul>${(m.actionItems || []).map(item => `<li>${linkReferences(item)}</li>`).join('')}</ul></div><a href="#cif-arbiter">View all action items <span aria-hidden="true">→</span></a></article>
       <article id="dates-deadlines" class="briefing-summary__card"><span class="briefing-summary__icon" aria-hidden="true">▣</span><div><h2>Dates &amp; deadlines</h2><dl>${summaries.map(([when, text]) => `<div><dt>${esc(when)}</dt><dd>${esc(text)}</dd></div>`).join('')}</dl></div><a href="#important-dates" data-expand-section="important-dates">View all dates <span aria-hidden="true">→</span></a></article>
     </section>`;
     const navLinks = navigation.map(({id,label,index}) => /\bArbiter\b/i.test(label) ? `<li><a class="briefing-external-link" href="${arbiterUrl}" target="_blank" rel="noopener noreferrer"><b>${String(index + 1).padStart(2, '0')}</b><span>${esc(label)}</span></a></li>` : `<li><a href="#${id}"><b>${String(index + 1).padStart(2, '0')}</b><span>${esc(label)}</span></a></li>`).join('');
@@ -114,6 +122,6 @@
     const quickBrief = m && m.quickBriefArticle;
     if (!quickBrief) return;
     const meetingPath = 'index.html';
-    quickBriefDetail.innerHTML = `<div class="quick-brief-page__inner"><a class="quick-brief-page__back" href="${meetingPath}">← Back to Preseason Meeting</a><article class="quick-brief-article quick-brief-article--standalone" aria-labelledby="quick-brief-headline"><header class="quick-brief-article__header"><p class="meeting-label">Quick brief</p><h1 id="quick-brief-headline">${esc(quickBrief.headline)}</h1><p class="quick-brief-article__deck">${esc(quickBrief.deck)}</p><p class="quick-brief-article__meta">${esc(m.association)} <span aria-hidden="true">•</span> ${esc(m.date)} <span aria-hidden="true">•</span> A fast preseason recap for officials who missed the meeting.</p></header>${quickBrief.sections.map(section => `<section class="quick-brief-article__section"><h2>${esc(section.heading)}</h2>${section.paragraphs.map(paragraph => `<p>${linkArbiter(paragraph)}</p>`).join('')}</section>`).join('')}<footer class="quick-brief-article__footer"><a href="${meetingPath}">← Back to Preseason Meeting</a></footer></article></div>`;
+    quickBriefDetail.innerHTML = `<div class="quick-brief-page__inner"><a class="quick-brief-page__back" href="${meetingPath}">← Back to Preseason Meeting</a><article class="quick-brief-article quick-brief-article--standalone" aria-labelledby="quick-brief-headline"><header class="quick-brief-article__header"><p class="meeting-label">Quick brief</p><h1 id="quick-brief-headline">${esc(quickBrief.headline)}</h1><p class="quick-brief-article__deck">${esc(quickBrief.deck)}</p><p class="quick-brief-article__meta">${esc(m.association)} <span aria-hidden="true">•</span> ${esc(m.date)} <span aria-hidden="true">•</span> A fast preseason recap for officials who missed the meeting.</p></header>${quickBrief.sections.map(section => `<section class="quick-brief-article__section"><h2>${esc(section.heading)}</h2>${section.paragraphs.map((paragraph, index) => `<p>${linkReferences(paragraph, { zoomLimit: index === 0 ? 1 : 0 })}</p>`).join('')}</section>`).join('')}<footer class="quick-brief-article__footer"><a href="${meetingPath}">← Back to Preseason Meeting</a></footer></article></div>`;
   }
 })();
