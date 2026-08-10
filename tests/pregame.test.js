@@ -17,6 +17,13 @@ test('valid direct route and required structured content exist', () => {
   assert.ok(game.rulesFocus.title && game.mechanicsFocus.title);
 });
 
+test('homepage links to a webmaster page that links to the sample template', () => {
+  const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const webmaster = fs.readFileSync(path.join(root, 'pages/webmaster.html'), 'utf8');
+  assert.match(homepage, /href="pages\/webmaster\.html"/);
+  assert.match(webmaster, new RegExp(`href="../pregame/${game.slug}/"`));
+});
+
 test('missing and unknown routes have an explicit not-found state', () => {
   for (const file of ['pregame/index.html', 'pregame/404.html']) assert.match(fs.readFileSync(path.join(root, file), 'utf8'), /not (?:found|available)|required/i);
   assert.equal(pregames.find((item) => item.slug === 'unknown-game'), undefined);
