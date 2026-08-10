@@ -58,7 +58,7 @@
       { id: 'q4', category: 'Mechanics', prompt: 'After a score near a sideline, the covering official should first:', choices: ['Run directly to midfield', 'Hold the ruling and observe nearby players', 'Watch the scoreboard'], answer: 1, explanation: 'The covering official preserves the ruling while the crew forms dead-ball coverage around the players.' },
       { id: 'q5', category: 'Game management', prompt: 'A coach is loudly demanding an immediate explanation while the crew is separating players. Best response?', choices: ['Debate the coach immediately', 'Ignore the incident to speak with the coach', 'Finish player control, then give a concise explanation'], answer: 2, explanation: 'Safety and accurate information come first; communicate with the coach once the crew has control.' }
     ],
-    acknowledgments: ['I reviewed the game information.', 'I reviewed the rules and mechanics topics.', 'I completed the knowledge check.', 'I understand my assignment.', 'I have notified the referee of any issue.'],
+    acknowledgment: 'I acknowledge that I received this pregame.',
     recap: ['Confirm all officials and equipment are present.', 'Review game modifications and Senior Night timing.', 'Address submitted or received questions.', 'Rules reminder: separate the score from later dead-ball conduct.', 'Mechanics reminder: hold the spot and build a dead-ball triangle.', 'Communication: names, short phrases, complete foul reports.', 'Review the unusual play situation and escalation coverage.', 'Coin toss: captains ready at 7:24 PM.', 'Leave the field together immediately after required duties.', 'Take final questions.']
   }];
 }));

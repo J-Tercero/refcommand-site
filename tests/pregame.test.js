@@ -36,15 +36,24 @@ test('optional fields are conditionally rendered and optional situation is guard
   assert.match(source, /No special game modifications have been reported/);
 });
 
-test('quiz scores answers and completion cannot be premature', () => {
+test('quiz scores answers and acknowledgment requires receipt and a crew member', () => {
   const correct = Object.fromEntries(game.quiz.map((question) => [question.id, question.answer]));
   assert.equal(scoreQuiz(game.quiz, correct), 5);
   correct.q1 = 99;
   assert.equal(scoreQuiz(game.quiz, correct), 4);
-  const everyBox = game.acknowledgments.map((_, index) => index);
-  assert.equal(canComplete(game.acknowledgments, everyBox, false), false);
-  assert.equal(canComplete(game.acknowledgments, everyBox.slice(1), true), false);
-  assert.equal(canComplete(game.acknowledgments, everyBox, true), true);
+  assert.equal(canComplete(false, 'Referee — Alex Morgan'), false);
+  assert.equal(canComplete(true, ''), false);
+  assert.equal(canComplete(true, 'Referee — Alex Morgan'), true);
+});
+
+test('pregame header has no navigation and shortcuts target site information and acknowledgment', () => {
+  const page = fs.readFileSync(path.join(root, 'pregame', game.slug, 'index.html'), 'utf8');
+  const source = fs.readFileSync(path.join(root, 'assets/js/pregame.js'), 'utf8');
+  assert.doesNotMatch(page, /<nav|nav-toggle/);
+  assert.match(source, /href="#site-information">Site information/);
+  assert.match(source, /href="#crew-acknowledgment">Crew acknowledgment/);
+  assert.match(source, /data-acknowledged/);
+  assert.match(source, /data-crew-member/);
 });
 
 test('local storage keys are unique by pregame and area', () => {

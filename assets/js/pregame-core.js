@@ -5,6 +5,6 @@
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   const storageKey = (slug, area) => `refcommand:pregame:${slug}:${area}`;
   const scoreQuiz = (questions, answers) => questions.reduce((score, question) => score + (answers[question.id] === question.answer ? 1 : 0), 0);
-  const canComplete = (requirements, checked, quizCompleted) => quizCompleted && requirements.every((_, index) => checked.includes(index));
+  const canComplete = (acknowledged, crewMember) => acknowledged && Boolean(crewMember);
   return { storageKey, scoreQuiz, canComplete };
 }));
