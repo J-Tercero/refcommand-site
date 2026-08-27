@@ -12,6 +12,15 @@ Weekly content lives in `data/pregames.js`. Each record is the complete source f
 
 Unknown or missing slugs do not fall back to another game. Static hosts should use `pregame/404.html` (or their normal 404 response) for nonexistent directories.
 
+## Game-specific informational pages
+
+Briefings with a custom operational outline may be authored as self-contained HTML in
+`pregame/<game-slug>/index.html`. Use the reusable `.weekly-game` components in the shared
+stylesheet and copy an existing game directory to a **new** slug; never replace an earlier
+game directory. Keep `pregame/index.html` as the neutral missing-slug page rather than
+putting a weekly game there. This preserves direct links to prior games while allowing the
+Weekly Pregame index to feature the current assignment.
+
 ## Read-only contract
 
 The Weekly Pregame is a crew reference, not a review-tracking workflow. Do not add quizzes, knowledge checks, acknowledgments, forms, checkboxes, confirmation controls, required responses, or completion tracking. It has no local or remote state and does not report crew activity.
