@@ -4,7 +4,7 @@ RefCommand is a practical command center for high school football officials, cre
 
 ## Current status
 
-The public 2026-season foundation is live as a static site. A reusable, locally saved Weekly Pregame briefing is available alongside the homepage, meeting briefings, and destination-page prototypes. RefCommand does not invent live or editorial content, and rules explanations remain original summaries with references rather than reproduced rulebook text.
+The public 2026-season foundation is live as a static site. A reusable, read-only Weekly Pregame briefing is available alongside the homepage, meeting briefings, and destination-page prototypes. RefCommand does not invent live or editorial content, and rules explanations remain original summaries with references rather than reproduced rulebook text.
 
 ## Run locally
 
@@ -36,4 +36,4 @@ Publish this repository from the branch and folder that contain `index.html` (no
 
 ## Current limitations
 
-This release has no backend, accounts, live data feed, database, API integration, or publishing workflow. Pregame progress is stored only in the current browser and is not reported. Consult official governing-body materials for authoritative rules guidance. RefCommand is independent and not affiliated with, endorsed by, or sponsored by NFHS.
+This release has no backend, accounts, live data feed, database, API integration, or publishing workflow. Consult official governing-body materials for authoritative rules guidance. RefCommand is independent and not affiliated with, endorsed by, or sponsored by NFHS.
