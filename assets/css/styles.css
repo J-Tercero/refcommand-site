@@ -414,3 +414,9 @@ body{background:var(--canvas);color:var(--slate);font-family:var(--sans);line-he
   .briefing-summary__card--action-items .action-checklist__item{margin-bottom:0}
   .briefing-summary__card--action-items .action-checklist__label a{grid-column:auto;font-size:inherit;font-weight:850}
 }
+
+/* Read-only Weekly Pregame details */
+.arrival-card{border-left:5px solid var(--red)}.arrival-callout{margin:.4rem 0 1rem;color:var(--navy);font-family:var(--display);font-size:1.15rem;font-weight:850}.restricted-area{border-top:5px solid var(--red)}.crew-reminder,.rule-note{padding:.75rem;border-left:3px solid var(--blue);background:#edf5ff;font-size:.78rem}.section-intro{margin:-.5rem 0 1rem;color:var(--muted);font-size:.82rem}.rule-reference{border-top:4px solid var(--red)}.rule-note{margin:1rem 0 0}.numbered-notes{display:grid;gap:.65rem;margin:1rem 0 0;padding:0;counter-reset:notes;list-style:none}.numbered-notes li{display:grid;grid-template-columns:2rem 1fr;align-items:start;padding-top:.6rem;border-top:1px solid var(--line);font-size:.82rem;counter-increment:notes}.numbered-notes li::before{color:var(--red);font-weight:900;content:counter(notes,decimal-leading-zero)}
+
+/* Pregame library keeps the live briefing and reusable template equally visible. */
+.card-grid--two{display:grid;gap:1rem}.card-grid--two .card{height:100%}@media(min-width:700px){.card-grid--two{grid-template-columns:repeat(2,minmax(0,1fr))}}
