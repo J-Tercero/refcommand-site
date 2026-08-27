@@ -3,69 +3,50 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const pregames = require('../data/pregames.js');
-const { storageKey, scoreQuiz, canComplete } = require('../assets/js/pregame-core.js');
 
 const root = path.join(__dirname, '..');
 const game = pregames[0];
+const source = fs.readFileSync(path.join(root, 'assets/js/pregame.js'), 'utf8');
 
-test('valid direct route and required structured content exist', () => {
+test('actual game has a valid direct route and complete snapshot', () => {
   const route = path.join(root, 'pregame', game.slug, 'index.html');
   assert.ok(fs.existsSync(route));
   assert.match(fs.readFileSync(route, 'utf8'), new RegExp(`data-pregame-slug="${game.slug}"`));
-  assert.ok(game.snapshot.matchup && game.snapshot.date && game.snapshot.kickoff && game.snapshot.venue);
-  assert.equal(game.crew.length, 7);
-  assert.ok(game.rulesFocus.title && game.mechanicsFocus.title);
+  assert.equal(game.snapshot.matchup, 'Clovis East vs. Centennial-Bakersfield');
+  assert.equal(game.snapshot.date, 'Thursday, August 27, 2026');
+  assert.equal(game.snapshot.kickoff, '4:00 PM');
+  assert.equal(game.snapshot.venue, 'Clovis East High School');
 });
 
-test('homepage links to a webmaster page that links to the sample template', () => {
-  const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+test('five-person crew and sideline responsibilities are present', () => {
+  assert.equal(game.crew.length, 5);
+  assert.deepEqual(game.crew.map(({ position }) => position), ['Referee', 'Umpire', 'Down Judge', 'Line Judge', 'Back Judge']);
+  assert.ok(game.crew.every(({ name, responsibilities }) => name && responsibilities.length >= 2));
+  assert.match(game.focus.title, /Sideline Management/i);
+  assert.equal(game.coachBriefing.length, 4);
+});
+
+test('briefing is read-only with no review tracking controls', () => {
+  for (const forbidden of ['<form', '<button', '<input', '<textarea', '<select', 'localStorage', 'data-quiz', 'acknowledgment']) {
+    assert.doesNotMatch(source, new RegExp(forbidden, 'i'));
+  }
+  assert.match(source, /Restricted Area/);
+  assert.match(source, /Coach Briefing/);
+  assert.match(source, /Crew Responsibilities/);
+  assert.match(source, /Game-Day Notes/);
+});
+
+test('NFHS references are concise summaries rather than fabricated quotations', () => {
+  assert.deepEqual(game.rules.map(({ citation }) => citation), ['NFHS Rule 1-2-3g', 'NFHS Rule 9-8-1k']);
+  assert.ok(game.rules.every(({ summary }) => summary && !summary.includes('“') && !summary.includes('"')));
+  assert.match(source, /Consult the current authorized NFHS Football Rules publication/);
+});
+
+test('webmaster page links to the current briefing rather than demo data', () => {
   const webmaster = fs.readFileSync(path.join(root, 'pages/webmaster.html'), 'utf8');
-  assert.match(homepage, /href="pages\/webmaster\.html"/);
   assert.match(webmaster, new RegExp(`href="../pregame/${game.slug}/"`));
-});
-
-test('missing and unknown routes have an explicit not-found state', () => {
-  for (const file of ['pregame/index.html', 'pregame/404.html']) assert.match(fs.readFileSync(path.join(root, file), 'utf8'), /not (?:found|available)|required/i);
-  assert.equal(pregames.find((item) => item.slug === 'unknown-game'), undefined);
-});
-
-test('optional fields are conditionally rendered and optional situation is guarded', () => {
-  const source = fs.readFileSync(path.join(root, 'assets/js/pregame.js'), 'utf8');
-  assert.match(source, /facts = .*\.filter/);
-  assert.match(source, /game\.playSituation \?/);
-  assert.match(source, /No special game modifications have been reported/);
-});
-
-test('quiz scores answers and acknowledgment requires receipt and a crew member', () => {
-  const correct = Object.fromEntries(game.quiz.map((question) => [question.id, question.answer]));
-  assert.equal(scoreQuiz(game.quiz, correct), 5);
-  correct.q1 = 99;
-  assert.equal(scoreQuiz(game.quiz, correct), 4);
-  assert.equal(canComplete(false, 'Referee — Alex Morgan'), false);
-  assert.equal(canComplete(true, ''), false);
-  assert.equal(canComplete(true, 'Referee — Alex Morgan'), true);
-});
-
-test('pregame header has no navigation and shortcuts target site information and acknowledgment', () => {
-  const page = fs.readFileSync(path.join(root, 'pregame', game.slug, 'index.html'), 'utf8');
-  const source = fs.readFileSync(path.join(root, 'assets/js/pregame.js'), 'utf8');
-  assert.doesNotMatch(page, /<nav|nav-toggle/);
-  assert.match(source, /href="#site-information">Site information/);
-  assert.match(source, /href="#crew-acknowledgment">Crew acknowledgment/);
-  assert.match(source, /data-acknowledged/);
-  assert.match(source, /data-crew-member/);
-});
-
-test('local storage keys are unique by pregame and area', () => {
-  assert.notEqual(storageKey(game.slug, 'quiz'), storageKey('next-game', 'quiz'));
-  assert.notEqual(storageKey(game.slug, 'quiz'), storageKey(game.slug, 'recap'));
-});
-
-test('question draft and clipboard fallback are wired', () => {
-  const source = fs.readFileSync(path.join(root, 'assets/js/pregame.js'), 'utf8');
-  assert.match(source, /get\('question'/);
-  assert.match(source, /navigator\.clipboard\.writeText/);
-  assert.match(source, /execCommand\('copy'\)/);
+  assert.doesNotMatch(webmaster, /Central at Clovis West/);
+  assert.doesNotMatch(JSON.stringify(pregames), /Alex Morgan|Veterans Memorial|weather|evaluator/i);
 });
 
 test('mobile overflow and print rules are present', () => {
